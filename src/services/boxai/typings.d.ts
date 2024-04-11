@@ -11,6 +11,12 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseChatResponse_ = {
+    code?: number;
+    data?: ChatResponse;
+    message?: string;
+  };
+
   type BaseResponseInt_ = {
     code?: number;
     data?: number;
@@ -88,6 +94,7 @@ declare namespace API {
     chatType?: string;
     createTime?: string;
     genChart?: string;
+    genName?: string;
     genResult?: string;
     goal?: string;
     id?: number;
@@ -99,12 +106,14 @@ declare namespace API {
   type ChartAddRequest = {
     chatData?: string;
     chatType?: string;
+    genName?: string;
     goal?: string;
   };
 
   type ChartEditRequest = {
     chatData?: string;
     chatType?: string;
+    genName?: string;
     goal?: string;
     id?: number;
   };
@@ -112,6 +121,7 @@ declare namespace API {
   type ChartQueryRequest = {
     chatType?: string;
     current?: number;
+    genName?: string;
     goal?: string;
     id?: number;
     pageSize?: number;
@@ -125,6 +135,7 @@ declare namespace API {
     chatType?: string;
     createTime?: string;
     genChart?: string;
+    genName?: string;
     genResult?: string;
     goal?: string;
     id?: number;
@@ -132,8 +143,18 @@ declare namespace API {
     updateTime?: string;
   };
 
+  type ChatResponse = {
+    genChart?: string;
+  };
+
   type DeleteRequest = {
     id?: number;
+  };
+
+  type genChartByAiUsingPOSTParams = {
+    chatType?: string;
+    genName?: string;
+    goal?: string;
   };
 
   type getChartByIdUsingGETParams = {
