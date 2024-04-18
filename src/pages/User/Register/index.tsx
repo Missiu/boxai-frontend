@@ -2,6 +2,7 @@ import { Footer } from '@/components';
 import { userRegisterUsingPost } from '@/services/boxai/userController';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { LoginForm, ProFormText } from '@ant-design/pro-components';
+// @ts-ignore
 import { Helmet, history } from '@umijs/max';
 import { Tabs, message } from 'antd';
 import { createStyles } from 'antd-style';

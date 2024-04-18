@@ -2,8 +2,12 @@ import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
 import { getLoginUserUsingGet } from '@/services/boxai/userController';
 import { LinkOutlined } from '@ant-design/icons';
 import { SettingDrawer } from '@ant-design/pro-components';
+// @ts-ignore
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { Link, history } from '@umijs/max';
+// @ts-ignore
+import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
+import { history, Link } from '@umijs/max';
+import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -13,7 +17,8 @@ const loginPath = '/user/login';
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
  * */
 export async function getInitialState(): Promise<{
-  currentUser?: API.LoginUserVO;
+  settings?: Partial<LayoutSettings>;
+  currentUser?: API.LoginUserResponse;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -28,20 +33,28 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
+
     return {
       currentUser,
+      // @ts-ignore
+      settings: defaultSettings,
     };
   }
-  return {};
+  return {
+    // @ts-ignore
+    settings: defaultSettings,
+  };
 }
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
+// @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
   return {
     actionsRender: () => [<Question key="doc" />],
     avatarProps: {
       src: initialState?.currentUser?.userAvatar,
       title: <AvatarName />,
+      // @ts-ignore
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
@@ -89,6 +102,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
+    // @ts-ignore
     childrenRender: (children) => {
       // if (initialState?.loading) return <PageLoading />;
       return (
@@ -100,6 +114,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
               enableDarkTheme
               settings={initialState?.settings}
               onSettingChange={(settings) => {
+                // @ts-ignore
                 setInitialState((preInitialState) => ({
                   ...preInitialState,
                   settings,
@@ -120,7 +135,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL: 'http://localhost:8101',
+  baseURL: 'http://localhost:8101/',
   withCredentials: true,
   ...errorConfig,
 };

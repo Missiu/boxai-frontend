@@ -22,6 +22,14 @@ export default {
   //   },
   // },
 
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:8101',
+      changeOrigin: true,
+      pathRewrite: { '^/api': '' },
+    },
+  },
+
   /**
    * @name 详细的代理配置
    * @doc https://github.com/chimurai/http-proxy-middleware
