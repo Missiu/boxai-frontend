@@ -5,15 +5,15 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseChatCompletionResponse_ = {
+  type BaseResponseChartFileResponse_ = {
     code?: number;
-    data?: ChatCompletionResponse;
+    data?: ChartFileResponse;
     message?: string;
   };
 
-  type BaseResponseLoginUserResponse_ = {
+  type BaseResponseChartFilesResponse_ = {
     code?: number;
-    data?: LoginUserResponse;
+    data?: ChartFilesResponse;
     message?: string;
   };
 
@@ -23,9 +23,9 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponsePageChart_ = {
+  type BaseResponsePageResult_ = {
     code?: number;
-    data?: PageChart_;
+    data?: PageResult_;
     message?: string;
   };
 
@@ -35,23 +35,10 @@ declare namespace API {
     message?: string;
   };
 
-  type BaseResponseUser_ = {
+  type BaseResponseUserInfoResponse_ = {
     code?: number;
-    data?: User;
+    data?: UserInfoResponse;
     message?: string;
-  };
-
-  type Chart = {
-    chatData?: string;
-    createTime?: string;
-    genChart?: string;
-    genName?: string;
-    genResult?: string;
-    goal?: string;
-    id?: number;
-    isDelete?: number;
-    updateTime?: string;
-    userId?: number;
   };
 
   type ChartDeleteRequest = {
@@ -70,6 +57,35 @@ declare namespace API {
     userId?: number;
   };
 
+  type ChartFileResponse = {
+    codeComment?: string;
+    codeNorm?: string;
+    codeNormStr?: string;
+    codeProfile?: string;
+    codeSuggestion?: string;
+    genName?: string;
+    goal?: string;
+    usedToken?: string;
+    userId?: number;
+  };
+
+  type ChartFilesResponse = {
+    codeAPI?: string;
+    codeCataloguePath?: string;
+    codeComment?: string;
+    codeEntity?: string;
+    codeNorm?: string;
+    codeNormStr?: string;
+    codeProfile?: string;
+    codeRun?: string;
+    codeSuggestion?: string;
+    codeTechnology?: string;
+    genName?: string;
+    goal?: string;
+    usedToken?: string;
+    userId?: number;
+  };
+
   type ChartQueryRequest = {
     current?: number;
     genName?: string;
@@ -83,7 +99,6 @@ declare namespace API {
 
   type ChartUpdateRequest = {
     chatData?: string;
-    createTime?: string;
     genChart?: string;
     genName?: string;
     genResult?: string;
@@ -94,30 +109,9 @@ declare namespace API {
     userId?: number;
   };
 
-  type ChatCompletionResponse = {
-    genChart?: string;
-  };
-
-  type genChartByAiUsingPOSTParams = {
+  type FileAIGCUsingPOSTParams = {
     genName?: string;
     goal?: string;
-  };
-
-  type getUserByIdUsingGETParams = {
-    /** id */
-    id?: number;
-  };
-
-  type LoginUserResponse = {
-    createTime?: string;
-    token?: string;
-    updateTime?: string;
-    usedToken?: string;
-    userAccount?: string;
-    userAvatar?: string;
-    userName?: string;
-    userProfile?: string;
-    userRole?: string;
   };
 
   type OrderItem = {
@@ -125,14 +119,14 @@ declare namespace API {
     column?: string;
   };
 
-  type PageChart_ = {
+  type PageResult_ = {
     countId?: string;
     current?: number;
     maxLimit?: number;
     optimizeCountSql?: boolean;
     orders?: OrderItem[];
     pages?: number;
-    records?: Chart[];
+    records?: Result[];
     searchCount?: boolean;
     size?: number;
     total?: number;
@@ -151,30 +145,66 @@ declare namespace API {
     total?: number;
   };
 
+  type Result = {
+    codeAPI?: string;
+    codeCataloguePath?: string;
+    codeComment?: string;
+    codeEntity?: string;
+    codeNorm?: string;
+    codeNormStr?: string;
+    codeProfile?: string;
+    codeRun?: string;
+    codeSuggestion?: string;
+    codeTechnology?: string;
+    createTime?: string;
+    genName?: string;
+    goal?: string;
+    id?: number;
+    isDelete?: number;
+    rawData?: string;
+    updateTime?: string;
+    usedToken?: string;
+    userId?: number;
+  };
+
+  type TextAIGCUsingPOSTParams = {
+    genName?: string;
+    goal?: string;
+    /** Text */
+    Text?: string;
+  };
+
   type User = {
+    availableBalance?: number;
+    cashBalance?: number;
     createTime?: string;
     id?: number;
     isDelete?: number;
-    token?: string;
     updateTime?: string;
-    usedToken?: string;
     userAccount?: string;
     userAvatar?: string;
     userName?: string;
     userPassword?: string;
     userProfile?: string;
     userRole?: string;
-  };
-
-  type UserAddRequest = {
-    userAccount?: string;
-    userAvatar?: string;
-    userName?: string;
-    userRole?: string;
+    voucherBalance?: number;
   };
 
   type UserDeleteRequest = {
     id?: number;
+  };
+
+  type UserInfoResponse = {
+    createTime?: string;
+    id?: number;
+    token?: string;
+    updateTime?: string;
+    usedToken?: string;
+    userAccount?: string;
+    userAvatar?: string;
+    userName?: string;
+    userProfile?: string;
+    userRole?: string;
   };
 
   type UserLoginRequest = {
@@ -185,11 +215,9 @@ declare namespace API {
   type UserQueryRequest = {
     current?: number;
     id?: number;
-    mpOpenId?: string;
     pageSize?: number;
     sortField?: string;
     sortOrder?: string;
-    unionId?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
@@ -201,25 +229,11 @@ declare namespace API {
     userPassword?: string;
   };
 
-  type UserUpdateMyRequest = {
-    userAccount?: string;
-    userAvatar?: string;
-    userName?: string;
-    userPassword?: string;
-    userProfile?: string;
-  };
-
   type UserUpdateRequest = {
-    createTime?: string;
-    id?: number;
-    token?: string;
     updateTime?: string;
-    usedToken?: string;
     userAccount?: string;
-    userAvatar?: string;
     userName?: string;
     userPassword?: string;
     userProfile?: string;
-    userRole?: string;
   };
 }

@@ -1,4 +1,10 @@
-import { getLoginUserUsingGet, updateMyUserUsingPost } from '@/services/boxai/userController';
+/**
+ * Chart组件：用于展示用户信息和提供用户信息编辑功能。
+ *
+ * 该组件通过调用服务获取登录用户信息，并在页面上展示用户名称、账户类型等信息。
+ * 同时，提供一个模态框用于编辑用户信息，用户可以修改自己的基本信息并提交更新。
+ */
+import { getLoginUserUsingGet, updateUserUsingPost } from '@/services/boxai/userController';
 import { AntDesignOutlined } from '@ant-design/icons';
 import {
   Avatar,
@@ -16,18 +22,25 @@ import {
 import React, { useEffect, useState } from 'react';
 
 const Chart: React.FC = () => {
-  // 用户信息获取
-  const [response, setResponse] = useState<API.LoginUserResponse>();
+  // 登录响应数据状态
+  const [response, setResponse] = useState<API.UserInfoResponse>();
+  // 用户角色状态
   const [userRole, setRole] = useState<any>();
+  // 初始化加载状态
   const [initLoading, setInitLoading] = useState(true);
+  // 用户信息列表状态
   const [list, setList] = useState<any[]>([]);
+  // 模态框可见性状态
   const [visible, setVisible] = useState(false);
-  const [formData, setFormData] = useState<API.UserUpdateMyRequest>({
-    userAvatar: '',
+  // 用户信息编辑表单数据状态
+  const [formData, setFormData] = useState<API.UserUpdateRequest>({
     userName: '',
     userProfile: '',
+    userAccount: '',
+    userPassword: '',
   });
 
+  // 根据用户角色设置用户类型名称
   const Role = () => {
     if (response?.userRole === 'user') {
       setRole('基础用户');
@@ -36,13 +49,15 @@ const Chart: React.FC = () => {
       setRole('高级用户');
     }
   };
+  // 使用useEffect钩子获取登录用户信息并更新状态
   useEffect(() => {
     const fetchData = async () => {
       try {
         const mes = await getLoginUserUsingGet();
+        console.log(mes);
         setResponse(mes?.data);
         const { data } = mes;
-        // 将 data 对象添加到 list 数组中
+        // 将数据对象添加到列表数组中
         setList([data]);
         setInitLoading(false);
       } catch (error) {
@@ -50,21 +65,22 @@ const Chart: React.FC = () => {
       }
     };
     fetchData().then(() => Role());
-  }, []); // 这里的空数组表示 useEffect 只会在组件挂载时调用一次
+  }, []); // 空数组依赖项表示useEffect只在挂载时运行一次
 
+  // 处理表单提交事件
   const handleFormSubmit = async () => {
-    console.log('111');
     try {
-      await updateMyUserUsingPost(formData);
+      await updateUserUsingPost(formData);
       message.success('用户信息修改成功');
       setVisible(false);
-      window.location.reload(); // 刷新页面
+      window.location.reload(); // 刷新页面以显示更新后的信息
     } catch (error) {
       console.error('Error updating user info:', error);
       message.error('用户信息修改失败');
     }
   };
 
+  // 页面渲染逻辑
   return (
     <>
       <Space style={{ borderRadius: '20px', backgroundColor: '#ffffff' }}>
@@ -77,7 +93,7 @@ const Chart: React.FC = () => {
         <Descriptions
           items={[
             { key: '1', label: '用户名称', children: response?.userName, span: 3 },
-            { key: '2', label: '账户类型', span: 3, children: userRole },
+            { key: '2', label: '账户类型', children: userRole, span: 3 },
           ]}
         />
       </Space>
@@ -101,12 +117,7 @@ const Chart: React.FC = () => {
             </List.Item>
           )}
         />
-        <Modal
-          title="编辑用户信息"
-          visible={visible}
-          onCancel={() => setVisible(false)}
-          footer={null}
-        >
+        <Modal title="编辑用户信息" open={visible} onCancel={() => setVisible(false)} footer={null}>
           <Form onFinish={handleFormSubmit}>
             <Form.Item label="名称" name="userName">
               <Input
@@ -130,12 +141,6 @@ const Chart: React.FC = () => {
               <Input
                 value={formData.userProfile}
                 onChange={(e) => setFormData({ ...formData, userProfile: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item label="头像" name="userAvatar">
-              <Input
-                value={formData.userAvatar}
-                onChange={(e) => setFormData({ ...formData, userAvatar: e.target.value })}
               />
             </Form.Item>
             <Form.Item>

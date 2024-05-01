@@ -1,12 +1,9 @@
 import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
 import { getLoginUserUsingGet } from '@/services/boxai/userController';
 import { LinkOutlined } from '@ant-design/icons';
-import { SettingDrawer } from '@ant-design/pro-components';
-// @ts-ignore
-import type { RunTimeLayoutConfig } from '@umijs/max';
-// @ts-ignore
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
-import { history, Link } from '@umijs/max';
+import type { RunTimeLayoutConfig } from '@umijs/max';
+import { Link, history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 
@@ -18,7 +15,7 @@ const loginPath = '/user/login';
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.LoginUserResponse;
+  currentUser?: API.UserInfoResponse;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -48,7 +45,7 @@ export async function getInitialState(): Promise<{
 
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
 // @ts-ignore
-export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) => {
+export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     actionsRender: () => [<Question key="doc" />],
     avatarProps: {
@@ -103,28 +100,28 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
     // unAccessible: <div>unAccessible</div>,
     // 增加一个 loading 的状态
     // @ts-ignore
-    childrenRender: (children) => {
-      // if (initialState?.loading) return <PageLoading />;
-      return (
-        <>
-          {children}
-          {isDev && (
-            <SettingDrawer
-              disableUrlParams
-              enableDarkTheme
-              settings={initialState?.settings}
-              onSettingChange={(settings) => {
-                // @ts-ignore
-                setInitialState((preInitialState) => ({
-                  ...preInitialState,
-                  settings,
-                }));
-              }}
-            />
-          )}
-        </>
-      );
-    },
+    // childrenRender: (children) => {
+    //   // if (initialState?.loading) return <PageLoading />;
+    //   return (
+    //     <>
+    //       {children}
+    //       {isDev && (
+    //         <SettingDrawer
+    //           disableUrlParams
+    //           enableDarkTheme
+    //           settings={initialState?.settings}
+    //           onSettingChange={(settings) => {
+    //             // @ts-ignore
+    //             setInitialState((preInitialState) => ({
+    //               ...preInitialState,
+    //               settings,
+    //             }));
+    //           }}
+    //         />
+    //       )}
+    //     </>
+    //   );
+    // },
     ...initialState?.settings,
   };
 };

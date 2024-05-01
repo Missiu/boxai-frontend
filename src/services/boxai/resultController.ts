@@ -32,10 +32,10 @@ export async function editChartUsingPost(
   });
 }
 
-/** genChartByAi POST /api/chart/genChart */
-export async function genChartByAiUsingPost(
+/** FileAIGC POST /api/chart/FileAIGC */
+export async function fileAigcUsingPost(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.genChartByAiUsingPOSTParams,
+  params: API.FileAIGCUsingPOSTParams,
   body: {},
   file?: File,
   options?: { [key: string]: any },
@@ -62,7 +62,7 @@ export async function genChartByAiUsingPost(
     }
   });
 
-  return request<API.BaseResponseChatCompletionResponse_>('/api/chart/genChart', {
+  return request<API.BaseResponseChartFileResponse_>('/api/chart/FileAIGC', {
     method: 'POST',
     params: {
       ...params,
@@ -73,8 +73,8 @@ export async function genChartByAiUsingPost(
   });
 }
 
-/** genFilesChartByAi POST /api/chart/genFilesChart */
-export async function genFilesChartByAiUsingPost(
+/** FilesAIGC POST /api/chart/FilesAIGC */
+export async function filesAigcUsingPost(
   body: {
     /** 文件数组 */
     files?: any[];
@@ -101,7 +101,7 @@ export async function genFilesChartByAiUsingPost(
     }
   });
 
-  return request<API.BaseResponseChatCompletionResponse_>('/api/chart/genFilesChart', {
+  return request<API.BaseResponseChartFilesResponse_>('/api/chart/FilesAIGC', {
     method: 'POST',
     data: formData,
     requestType: 'form',
@@ -109,17 +109,32 @@ export async function genFilesChartByAiUsingPost(
   });
 }
 
-/** listMyChartByPage POST /api/chart/my/list/page */
+/** listMyChartByPage POST /api/chart/list/page */
 export async function listMyChartByPageUsingPost(
   body: API.ChartQueryRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageChart_>('/api/chart/my/list/page', {
+  return request<API.BaseResponsePageResult_>('/api/chart/list/page', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
     data: body,
+    ...(options || {}),
+  });
+}
+
+/** TextAIGC POST /api/chart/TextAIGC */
+export async function textAigcUsingPost(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.TextAIGCUsingPOSTParams,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseChartFileResponse_>('/api/chart/TextAIGC', {
+    method: 'POST',
+    params: {
+      ...params,
+    },
     ...(options || {}),
   });
 }

@@ -7,20 +7,9 @@ export default [
       { name: '注册', path: '/user/register', component: './User/Register' },
     ],
   },
-  { name: '数据分析', path: '/chart', icon: 'smile', component: './AddChart' },
-  { name: '个人信息', path: '/user/info', icon: 'smile', component: './User/UserInfo' },
-  { name: '历史记录', path: '/history', icon: 'smile', component: './History' },
-  {
-    path: '/admin',
-    name: '管理页',
-    icon: 'crown',
-    access: 'canAdmin',
-    routes: [
-      { path: '/admin', redirect: '/admin/sub-page' },
-      { path: '/admin/sub-page', name: '二级管理页', component: './Admin' },
-    ],
-  },
-  // { name: '查询表格', icon: 'table', path: '/list', component: './TableList' },
+  { name: '数据分析', path: '/chart', icon: 'dashboard', component: './AddChart' },
+  { name: '个人信息', path: '/user/info', icon: 'user', component: './User/UserInfo' },
+  { name: '历史记录', path: '/history', icon: 'database', component: './History' },
   { path: '/', redirect: '/chart' },
   { path: '*', layout: false, component: './404' },
 ];
