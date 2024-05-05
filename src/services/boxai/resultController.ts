@@ -109,8 +109,23 @@ export async function filesAigcUsingPost(
   });
 }
 
-/** listMyChartByPage POST /api/chart/list/page */
+/** listMyChartByPage POST /api/chart/list/my/page */
 export async function listMyChartByPageUsingPost(
+  body: API.ChartQueryRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponsePageResult_>('/api/chart/list/my/page', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** listChartByPage POST /api/chart/list/page */
+export async function listChartByPageUsingPost(
   body: API.ChartQueryRequest,
   options?: { [key: string]: any },
 ) {
@@ -139,12 +154,117 @@ export async function textAigcUsingPost(
   });
 }
 
-/** updateChart POST /api/chart/update */
-export async function updateChartUsingPost(
+/** updateCodeAPI POST /api/chart/update/codeAPI */
+export async function updateCodeApiUsingPost(
   body: API.ChartUpdateRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean_>('/api/chart/update', {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeAPI', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeCataloguePath POST /api/chart/update/codeCataloguePath */
+export async function updateCodeCataloguePathUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeCataloguePath', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeComment POST /api/chart/update/codeComment */
+export async function updateCodeCommentUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeComment', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeNormStr POST /api/chart/update/codeNormStr */
+export async function updateCodeNormStrUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeNormStr', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeProfile POST /api/chart/update/codeProfile */
+export async function updateCodeProfileUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeProfile', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeRun POST /api/chart/update/codeRun */
+export async function updateCodeRunUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeRun', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateCodeSuggestion POST /api/chart/update/codeSuggestion */
+export async function updateCodeSuggestionUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/codeSuggestion', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** updateGenName POST /api/chart/update/genName */
+export async function updateGenNameUsingPost(
+  body: API.ChartUpdateRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/chart/update/genName', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

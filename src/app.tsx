@@ -1,13 +1,12 @@
 import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
 import { getLoginUserUsingGet } from '@/services/boxai/userController';
-import { LinkOutlined } from '@ant-design/icons';
-import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
+import type { Settings as LayoutSettings, ProSettings } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from '@umijs/max';
-import { Link, history } from '@umijs/max';
+import { history } from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 
-const isDev = process.env.NODE_ENV === 'development';
+// const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 
 /**
@@ -16,6 +15,8 @@ const loginPath = '/user/login';
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
   currentUser?: API.UserInfoResponse;
+  loading?: boolean;
+  fetchUserInfo?: () => Promise<API.UserInfoResponse | undefined>;
 }> {
   const fetchUserInfo = async () => {
     try {
@@ -30,28 +31,26 @@ export async function getInitialState(): Promise<{
   const { location } = history;
   if (location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
-
-    return {
-      currentUser,
-      // @ts-ignore
-      settings: defaultSettings,
-    };
+    if (currentUser) {
+      return {
+        fetchUserInfo,
+        currentUser,
+        settings: defaultSettings as Partial<ProSettings>,
+      };
+    }
   }
   return {
-    // @ts-ignore
-    settings: defaultSettings,
+    fetchUserInfo,
+    settings: defaultSettings as Partial<ProSettings>,
   };
 }
-
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-// @ts-ignore
 export const layout: RunTimeLayoutConfig = ({ initialState }) => {
   return {
     actionsRender: () => [<Question key="doc" />],
     avatarProps: {
       src: initialState?.currentUser?.userAvatar,
       title: <AvatarName />,
-      // @ts-ignore
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
@@ -87,14 +86,14 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         width: '331px',
       },
     ],
-    links: isDev
-      ? [
-          <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-            <LinkOutlined />
-            <span>OpenAPI 文档</span>
-          </Link>,
-        ]
-      : [],
+    // links: isDev
+    //   ? [
+    //       <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
+    //         <LinkOutlined />
+    //         <span>OpenAPI 文档</span>
+    //       </Link>,
+    //     ]
+    //   : [],
     menuHeaderRender: undefined,
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,

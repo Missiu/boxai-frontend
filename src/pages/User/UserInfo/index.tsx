@@ -4,24 +4,38 @@
  * 该组件通过调用服务获取登录用户信息，并在页面上展示用户名称、账户类型等信息。
  * 同时，提供一个模态框用于编辑用户信息，用户可以修改自己的基本信息并提交更新。
  */
-import { getLoginUserUsingGet, updateUserUsingPost } from '@/services/boxai/userController';
+import {
+  getLoginUserUsingGet,
+  upAccountUsingPost,
+  upPasswordUsingPost,
+  upUserNameUsingPost,
+  upUserProfileUsingPost,
+  userLogoutUsingPost,
+} from '@/services/boxai/userController';
 import { AntDesignOutlined } from '@ant-design/icons';
 import {
   Avatar,
   Button,
+  Col,
   Descriptions,
   Divider,
-  FloatButton,
   Form,
   Input,
   List,
   Modal,
+  Row,
   Space,
+  Typography,
   message,
 } from 'antd';
+// import Paragraph from 'antd/es/skeleton/Paragraph';
+import { history } from '@@/core/history';
+import { stringify } from 'querystring';
 import React, { useEffect, useState } from 'react';
 
-const Chart: React.FC = () => {
+const { Title, Paragraph, Text } = Typography;
+
+const UserInfo: React.FC = () => {
   // 登录响应数据状态
   const [response, setResponse] = useState<API.UserInfoResponse>();
   // 用户角色状态
@@ -31,16 +45,26 @@ const Chart: React.FC = () => {
   // 用户信息列表状态
   const [list, setList] = useState<any[]>([]);
   // 模态框可见性状态
-  const [visible, setVisible] = useState(false);
-  // 用户信息编辑表单数据状态
-  const [formData, setFormData] = useState<API.UserUpdateRequest>({
-    userName: '',
-    userProfile: '',
-    userAccount: '',
-    userPassword: '',
+  const [formPasswordVisible, setFormPasswordVisible] = useState(false);
+  const [formPasswordData, setFormPasswordData] = useState({
+    newPassword: '',
+    checkPassword: '',
+    oldPassword: '',
   });
 
-  // 根据用户角色设置用户类型名称
+  const fetchData = async () => {
+    try {
+      const mes = await getLoginUserUsingGet();
+      console.log(mes);
+      setResponse(mes?.data);
+      const { data } = mes;
+      // 将数据对象添加到列表数组中
+      setList([data]);
+      setInitLoading(false);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
   const Role = () => {
     if (response?.userRole === 'user') {
       setRole('基础用户');
@@ -49,34 +73,116 @@ const Chart: React.FC = () => {
       setRole('高级用户');
     }
   };
-  // 使用useEffect钩子获取登录用户信息并更新状态
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const mes = await getLoginUserUsingGet();
-        console.log(mes);
-        setResponse(mes?.data);
-        const { data } = mes;
-        // 将数据对象添加到列表数组中
-        setList([data]);
-        setInitLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-    fetchData().then(() => Role());
+    Role(); // 确保在获取到响应数据后调用 Role 函数
+    fetchData();
   }, []); // 空数组依赖项表示useEffect只在挂载时运行一次
 
   // 处理表单提交事件
-  const handleFormSubmit = async () => {
+  const handleSubmitName = async (newName: string) => {
     try {
-      await updateUserUsingPost(formData);
-      message.success('用户信息修改成功');
-      setVisible(false);
-      window.location.reload(); // 刷新页面以显示更新后的信息
+      await upUserNameUsingPost({ userName: newName }); // 假设 API 只需要用户名
+      message.success('修改成功');
+      // 更新状态来反映新的用户名，而不是刷新整个页面
+      setResponse((prevState) => ({
+        ...prevState,
+        userName: newName,
+      }));
     } catch (error) {
       console.error('Error updating user info:', error);
-      message.error('用户信息修改失败');
+      message.error('修改失败');
+    }
+  };
+  // 修改账户信息
+  const handleSubmitAccount = async (newAccount: string) => {
+    try {
+      await upAccountUsingPost({ userAccount: newAccount });
+      message.success('账户修改成功');
+      // 更新状态以局部刷新界面
+      setResponse((prevState) => ({
+        ...prevState,
+        userAccount: newAccount,
+      }));
+      await userLogoutUsingPost();
+      const { search, pathname } = window.location;
+      const urlParams = new URL(window.location.href).searchParams;
+      /**
+       * 如果当前路径不是登录页且没有重定向参数，则跳转到登录页，并带上当前路径
+       */
+      const redirect = urlParams.get('redirect');
+      if (window.location.pathname !== '/user/login' && !redirect) {
+        history.replace({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: pathname + search,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error updating account info:', error);
+      message.error('账户修改失败');
+    }
+  };
+
+  const showPasswordForm = () => {
+    setFormPasswordVisible(true);
+  };
+
+  const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormPasswordData({
+      ...formPasswordData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmitPassword = async () => {
+    if (formPasswordData.newPassword !== formPasswordData.checkPassword) {
+      message.error('两次输入的密码不一致');
+      return;
+    }
+    try {
+      await upPasswordUsingPost(formPasswordData);
+      message.success('密码修改成功');
+      setFormPasswordVisible(false); // 关闭模态框
+      setFormPasswordData({
+        newPassword: '',
+        checkPassword: '',
+        oldPassword: '',
+      }); // 重置表单数据
+      await userLogoutUsingPost();
+      const { search, pathname } = window.location;
+      const urlParams = new URL(window.location.href).searchParams;
+      /**
+       * 如果当前路径不是登录页且没有重定向参数，则跳转到登录页，并带上当前路径
+       */
+      const redirect = urlParams.get('redirect');
+      if (window.location.pathname !== '/user/login' && !redirect) {
+        history.replace({
+          pathname: '/user/login',
+          search: stringify({
+            redirect: pathname + search,
+          }),
+        });
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      message.error('密码修改失败');
+    }
+  };
+  // 修改简介信息
+  const handleSubmitProfile = async (newProfile: string) => {
+    try {
+      await upUserProfileUsingPost({ userProfile: newProfile });
+      message.success('简介修改成功');
+      // 更新状态以局部刷新界面
+      setResponse((prevState) => ({
+        ...prevState,
+        userProfile: newProfile,
+      }));
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      message.error('简介修改失败');
     }
   };
 
@@ -92,67 +198,284 @@ const Chart: React.FC = () => {
         />
         <Descriptions
           items={[
-            { key: '1', label: '用户名称', children: response?.userName, span: 3 },
-            { key: '2', label: '账户类型', children: userRole, span: 3 },
+            {
+              key: '1',
+              label: (
+                <Text strong style={{ lineHeight: '32px' }}>
+                  用户名称
+                </Text>
+              ),
+              children: (
+                <Text strong style={{ lineHeight: '32px' }}>
+                  {response?.userName}
+                </Text>
+              ),
+              span: 3,
+            },
+            {
+              key: '2',
+              label: (
+                <Text strong style={{ lineHeight: '32px' }}>
+                  账户类型
+                </Text>
+              ),
+              children: (
+                <Text strong style={{ lineHeight: '32px' }}>
+                  {userRole || '基础用户'}
+                </Text>
+              ),
+              span: 2,
+            },
+            {
+              key: '3',
+              label: (
+                <Text strong style={{ lineHeight: '32px' }}>
+                  修改密码
+                </Text>
+              ),
+              children: (
+                <div>
+                  <Button type="primary" shape="circle" onClick={showPasswordForm}>
+                    A
+                  </Button>
+                </div>
+              ),
+              span: 1,
+            },
           ]}
         />
       </Space>
-
+      <Modal
+        title="修改密码"
+        open={formPasswordVisible}
+        onOk={handleSubmitPassword}
+        onCancel={() => setFormPasswordVisible(false)}
+        okText="提交"
+        cancelText="取消"
+      >
+        <Form layout="vertical" onFinish={handleSubmitPassword} initialValues={{ remember: true }}>
+          <Form.Item
+            name="oldPassword"
+            label="当前密码"
+            rules={[{ required: true, message: '请输入当前密码!' }]}
+          >
+            <Input.Password onChange={handlePasswordChange} name="oldPassword" />
+          </Form.Item>
+          <Form.Item
+            name="newPassword"
+            label="新密码"
+            rules={[{ required: true, message: '请输入新密码!' }]}
+          >
+            <Input.Password onChange={handlePasswordChange} name="newPassword" />
+          </Form.Item>
+          <Form.Item
+            name="checkPassword"
+            label="确认密码"
+            rules={[{ required: true, message: '请确认密码!' }]}
+          >
+            <Input.Password onChange={handlePasswordChange} name="checkPassword" />
+          </Form.Item>
+        </Form>
+      </Modal>
       <Divider orientation="left">基本信息</Divider>
-      <Space style={{ borderRadius: '20px', backgroundColor: '#ffffff', display: 'block' }}>
+      <Space style={{ borderRadius: '12px', display: 'block' }}>
         <List
           loading={initLoading}
           size="large"
           dataSource={list}
           renderItem={(item) => (
-            <List.Item style={{ display: 'block', marginTop: '10px' }}>
-              <div>名称 : {item.userName}</div>
-              <div style={{ marginTop: '20px' }}>账号: {item.userAccount}</div>
-              <div style={{ marginTop: '20px' }}>简介: {item.userProfile}</div>
-              <div style={{ marginTop: '20px' }}>用量: {item.usedToken}</div>
-              <div style={{ marginTop: '20px' }}>余额: {item.token - item.usedToken}</div>
-              <div style={{ marginTop: '20px' }}>总量: {item.token}</div>
-              <div style={{ marginTop: '20px' }}>账户类型: {userRole}</div>
-              <div style={{ marginTop: '20px' }}>创建时间 : {item.createTime}</div>
+            <List.Item style={{ display: 'block' }}>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'可用余额'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph style={{ marginRight: '50%', width: '100%' }}>
+                    <Text strong>
+                      {item.availableBalance ? <>{item.availableBalance}</> : <>0</>}
+                    </Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'代金券'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph style={{ marginRight: '50%', width: '100%' }}>
+                    <Text strong>{item.voucherBalance ? <>{item.voucherBalance}</> : <>0</>}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'现金'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph style={{ marginRight: '50%', width: '100%' }}>
+                    <Text strong>{item.cashBalance ? <>{item.cashBalance}</> : <>0</>}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'名称'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph
+                    style={{ marginRight: '50%', width: '100%' }}
+                    editable={{
+                      onChange: async (value: string) => {
+                        await handleSubmitName(value);
+                      },
+                      text: response?.userName || item.userName,
+                    }}
+                  >
+                    <Text strong>{response?.userName || item.userName}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'账号'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph
+                    style={{ marginRight: '50%', width: '100%' }}
+                    editable={{
+                      onChange: async (value: string) => {
+                        await handleSubmitAccount(value);
+                      },
+                      text: response?.userAccount || item.userAccount,
+                    }}
+                  >
+                    <Text strong>{response?.userAccount || item.userAccount}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'简介'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph
+                    style={{ marginRight: '50%', width: '100%' }}
+                    editable={{
+                      onChange: async (value: string) => {
+                        await handleSubmitProfile(value);
+                      },
+                      text: response?.userProfile || item.userProfile,
+                    }}
+                  >
+                    <Text strong>{response?.userProfile || item.userProfile}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'账户类型'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph style={{ marginRight: '50%', width: '100%' }}>
+                    <Text strong>{userRole ? <>{userRole}</> : <>基础账户</>}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
+              <Row
+                style={{
+                  borderRadius: '12px',
+                  marginTop: '8px',
+                  backgroundColor: '#ffffff',
+                  padding: '8px',
+                }}
+              >
+                <Col span={8}>
+                  <Title level={5} style={{ marginLeft: '25%', width: '100%' }}>
+                    {'创建时间'}
+                  </Title>
+                </Col>
+                <Col span={8}></Col>
+                <Col span={8}>
+                  <Paragraph style={{ marginRight: '50%', width: '100%' }}>
+                    <Text strong>{item.createTime}</Text>
+                  </Paragraph>
+                </Col>
+              </Row>
             </List.Item>
           )}
         />
-        <Modal title="编辑用户信息" open={visible} onCancel={() => setVisible(false)} footer={null}>
-          <Form onFinish={handleFormSubmit}>
-            <Form.Item label="名称" name="userName">
-              <Input
-                value={formData.userName}
-                onChange={(e) => setFormData({ ...formData, userName: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item label="账号" name="userAccount">
-              <Input
-                value={formData.userAccount}
-                onChange={(e) => setFormData({ ...formData, userAccount: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item label="密码" name="userPassword">
-              <Input
-                value={formData.userPassword}
-                onChange={(e) => setFormData({ ...formData, userPassword: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item label="简介" name="userProfile">
-              <Input
-                value={formData.userProfile}
-                onChange={(e) => setFormData({ ...formData, userProfile: e.target.value })}
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button type="primary" htmlType="submit">
-                提交
-              </Button>
-            </Form.Item>
-          </Form>
-        </Modal>
-        <FloatButton onClick={() => setVisible(true)} />
       </Space>
     </>
   );
 };
-export default Chart;
+export default UserInfo;

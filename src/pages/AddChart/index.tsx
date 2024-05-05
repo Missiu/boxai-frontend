@@ -25,9 +25,9 @@ import TextArea from 'antd/es/input/TextArea';
 import React, { useEffect, useState } from 'react';
 
 const { Content, Footer, Sider } = Layout;
-const { Text } = Typography;
+const { Title, Text } = Typography;
 
-const App: React.FC = () => {
+const Chart: React.FC = () => {
   const navigate = useNavigate();
   const initSearchParams = {
     current: 1,
@@ -159,7 +159,7 @@ const App: React.FC = () => {
     }
     // setFiles(res.data);
     message.success('上传成功');
-    navigate('/thistory', { state: { id: chartList.map((chart) => String(chart.id))[total] } });
+    navigate('/history', { state: { id: chartList.map((chart) => String(chart.id))[total] } });
     setSubmitting(false);
   };
 
@@ -201,6 +201,9 @@ const App: React.FC = () => {
       </Sider>
       <Layout style={{ marginLeft: 200 }}>
         <Space.Compact block></Space.Compact>
+        <Typography style={{ margin: '16px 0', display: 'flex', justifyContent: 'center' }}>
+          <Title level={3}>基于文本生成式AI大模型的Github源代码分析及可视化平台</Title>
+        </Typography>
         <Row style={{}}>
           <Col span={8}>
             <Button
@@ -412,4 +415,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default Chart;

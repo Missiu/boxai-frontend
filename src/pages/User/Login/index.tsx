@@ -101,8 +101,10 @@ const Login: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src="/logo.svg" />}
-          title="Box AI"
-          subTitle={'Box AI 是智能分析工具，帮助快速分析构建开源项目'}
+          title="基于文本生成式AI大模型的Github源代码分析及可视化平台"
+          subTitle={
+            '面对广大开发者和技术爱好者的AI开发工具，可以进一步降低理解源代码的门槛，增加开发效率'
+          }
           initialValues={{
             autoLogin: true,
           }}

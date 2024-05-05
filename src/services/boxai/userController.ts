@@ -78,12 +78,57 @@ export async function userRegisterUsingPost(
   });
 }
 
-/** updateUser POST /api/user/update */
-export async function updateUserUsingPost(
-  body: API.UserUpdateRequest,
+/** upAccount POST /api/user/update/account */
+export async function upAccountUsingPost(
+  body: API.UserUpInfoRequest,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseBoolean_>('/api/user/update', {
+  return request<API.BaseResponseInt_>('/api/user/update/account', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** upUserName POST /api/user/update/name */
+export async function upUserNameUsingPost(
+  body: API.UserUpInfoRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/user/update/name', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** upPassword POST /api/user/update/password */
+export async function upPasswordUsingPost(
+  body: API.UserUpPassword,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/user/update/password', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** upUserProfile POST /api/user/update/profile */
+export async function upUserProfileUsingPost(
+  body: API.UserUpInfoRequest,
+  options?: { [key: string]: any },
+) {
+  return request<API.BaseResponseInt_>('/api/user/update/profile', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

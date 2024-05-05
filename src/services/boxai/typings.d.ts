@@ -17,9 +17,27 @@ declare namespace API {
     message?: string;
   };
 
+  type BaseResponseInt_ = {
+    code?: number;
+    data?: number;
+    message?: string;
+  };
+
   type BaseResponseLong_ = {
     code?: number;
     data?: number;
+    message?: string;
+  };
+
+  type BaseResponsePagePost_ = {
+    code?: number;
+    data?: PagePost_;
+    message?: string;
+  };
+
+  type BaseResponsePagePostVO_ = {
+    code?: number;
+    data?: PagePostVO_;
     message?: string;
   };
 
@@ -62,7 +80,9 @@ declare namespace API {
     codeNorm?: string;
     codeNormStr?: string;
     codeProfile?: string;
+    codeRun?: string;
     codeSuggestion?: string;
+    codeTechnology?: string;
     genName?: string;
     goal?: string;
     usedToken?: string;
@@ -98,14 +118,20 @@ declare namespace API {
   };
 
   type ChartUpdateRequest = {
-    chatData?: string;
-    genChart?: string;
+    codeAPI?: string;
+    codeCataloguePath?: string;
+    codeComment?: string;
+    codeEntity?: string;
+    codeNorm?: string;
+    codeNormStr?: string;
+    codeProfile?: string;
+    codeRun?: string;
+    codeSuggestion?: string;
+    codeTechnology?: string;
     genName?: string;
-    genResult?: string;
     goal?: string;
     id?: number;
-    isDelete?: number;
-    updateTime?: string;
+    rawData?: string;
     userId?: number;
   };
 
@@ -117,6 +143,32 @@ declare namespace API {
   type OrderItem = {
     asc?: boolean;
     column?: string;
+  };
+
+  type PagePost_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: Post[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
+  };
+
+  type PagePostVO_ = {
+    countId?: string;
+    current?: number;
+    maxLimit?: number;
+    optimizeCountSql?: boolean;
+    orders?: OrderItem[];
+    pages?: number;
+    records?: PostVO[];
+    searchCount?: boolean;
+    size?: number;
+    total?: number;
   };
 
   type PageResult_ = {
@@ -145,6 +197,54 @@ declare namespace API {
     total?: number;
   };
 
+  type Post = {
+    content?: string;
+    createTime?: string;
+    favourNum?: number;
+    id?: number;
+    isDelete?: number;
+    resultId?: number;
+    thumbNum?: number;
+    updateTime?: string;
+    userId?: number;
+  };
+
+  type PostFavourAddRequest = {
+    postId?: number;
+  };
+
+  type PostQueryRequest = {
+    content?: string;
+    current?: number;
+    pageSize?: number;
+    resultId?: number;
+    searchText?: string;
+    sortField?: string;
+    sortOrder?: string;
+    title?: string;
+    userId?: number;
+  };
+
+  type PostThumbAddRequest = {
+    postId?: number;
+  };
+
+  type PostVO = {
+    codeProfile?: string;
+    content?: string;
+    createTime?: string;
+    favourNum?: number;
+    genName?: string;
+    id?: number;
+    isDelete?: number;
+    resultId?: number;
+    thumbNum?: number;
+    updateTime?: string;
+    userAvatar?: string;
+    userId?: number;
+    userName?: string;
+  };
+
   type Result = {
     codeAPI?: string;
     codeCataloguePath?: string;
@@ -165,6 +265,11 @@ declare namespace API {
     updateTime?: string;
     usedToken?: string;
     userId?: number;
+  };
+
+  type shareWorksUsingPOSTParams = {
+    content?: string;
+    id?: number;
   };
 
   type TextAIGCUsingPOSTParams = {
@@ -195,16 +300,18 @@ declare namespace API {
   };
 
   type UserInfoResponse = {
+    availableBalance?: number;
+    cashBalance?: number;
     createTime?: string;
     id?: number;
     token?: string;
     updateTime?: string;
-    usedToken?: string;
     userAccount?: string;
     userAvatar?: string;
     userName?: string;
     userProfile?: string;
     userRole?: string;
+    voucherBalance?: number;
   };
 
   type UserLoginRequest = {
@@ -229,11 +336,15 @@ declare namespace API {
     userPassword?: string;
   };
 
-  type UserUpdateRequest = {
-    updateTime?: string;
+  type UserUpInfoRequest = {
     userAccount?: string;
     userName?: string;
-    userPassword?: string;
     userProfile?: string;
+  };
+
+  type UserUpPassword = {
+    checkPassword?: string;
+    newPassword?: string;
+    oldPassword?: string;
   };
 }

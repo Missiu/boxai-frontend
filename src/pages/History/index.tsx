@@ -1,11 +1,27 @@
-import { listMyChartByPageUsingPost } from '@/services/boxai/resultController';
+import { shareWorksUsingPost } from '@/services/boxai/postController';
+import {
+  listMyChartByPageUsingPost,
+  updateCodeApiUsingPost,
+  updateCodeCataloguePathUsingPost,
+  updateCodeCommentUsingPost,
+  updateCodeNormStrUsingPost,
+  updateCodeProfileUsingPost,
+  updateCodeRunUsingPost,
+  updateCodeSuggestionUsingPost,
+  updateGenNameUsingPost,
+} from '@/services/boxai/resultController';
+import { UploadOutlined } from '@ant-design/icons';
 import {
   Button,
   Card,
   Divider,
   Flex,
+  FloatButton,
+  Form,
+  Input,
   Layout,
   Menu,
+  Modal,
   Slider,
   Switch,
   Typography,
@@ -54,7 +70,7 @@ function parseCodeNorm(code: string) {
     return '{}';
   }
 }
-const App: React.FC = () => {
+const History: React.FC = () => {
   const location = useLocation();
   let idType = {} as { id?: string };
   idType = location.state || {};
@@ -71,12 +87,165 @@ const App: React.FC = () => {
   ); // 新增状态用于存储选中的图表ID
   const [rows, setRows] = useState(2);
   const [expanded, setExpanded] = useState(false);
-
+  // const [response, setResponse] = useState<API.ChartUpdateRequest>();
+  const [visible, setVisible] = useState(false); // 控制输入框的显示与隐藏
+  const [description, setDescription] = useState(''); // 存储用户输入的描述
   const items = chartList.map((chart) => ({
     key: String(chart.id),
     label: chart.genName,
   }));
 
+  const handleSubmitGenName = async (newName: string, id: number) => {
+    try {
+      await updateGenNameUsingPost({ genName: newName, id: id });
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 genName
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, genName: newName } : chart,
+      );
+
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('修改成功');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      message.error('修改失败');
+    }
+  };
+  // 处理模态框确认按钮点击的函数
+  const handleSubmitDescription = async (id: number) => {
+    // 在这里实现发布逻辑，如发送描述信息到服务器等
+    // 发布成功后关闭模态框并清空输入
+    setVisible(false);
+    await shareWorksUsingPost({ content: description, id: id });
+    message.success('分享成功！');
+  };
+  // 处理输入框变化的函数
+  const handleDescriptionChange = (e: any) => {
+    setDescription(e.target.value);
+  };
+  const handleSubmitCodeComment = async (str: string, id: number) => {
+    try {
+      await updateCodeCommentUsingPost({ codeComment: str, id: id });
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 genName
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeComment: str } : chart,
+      );
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('修改成功');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      message.error('修改失败');
+    }
+  };
+
+  // 更新 CodeNormStr 的异步函数
+  const handleSubmitCodeNormStr = async (str: string, id: number) => {
+    try {
+      await updateCodeNormStrUsingPost({ codeNormStr: str, id: id });
+      // 更新状态以局部刷新界面
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeNormStr: str } : chart,
+      );
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeNormStr 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeNormStr:', error);
+      message.error('CodeNormStr 修改失败');
+    }
+  };
+
+  // 更新 CodeProfile 的异步函数
+  const handleSubmitCodeProfile = async (str: string, id: number) => {
+    try {
+      await updateCodeProfileUsingPost({ codeProfile: str, id: id });
+      // 更新状态以局部刷新界面
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeProfile: str } : chart,
+      );
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeProfile 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeProfile:', error);
+      message.error('CodeProfile 修改失败');
+    }
+  };
+  // 更新 CodeAPI 的异步函数
+  const handleSubmitCodeAPI = async (str: string, id: number) => {
+    try {
+      // 调用 API 更新 codeAPI
+      await updateCodeApiUsingPost({ codeAPI: str, id: id });
+
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 codeAPI
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeAPI: str } : chart,
+      );
+
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeAPI 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeAPI:', error);
+      message.error('CodeAPI 修改失败');
+    }
+  };
+  // 更新 CodeRun 的异步函数
+  const handleSubmitCodeRun = async (str: string, id: number) => {
+    try {
+      // 假设 updateCodeRunUsingPOST 是一个服务函数，负责发送 POST 请求到后端
+      await updateCodeRunUsingPost({ codeRun: str, id: id });
+
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 codeRun
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeRun: str } : chart,
+      );
+
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeRun 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeRun:', error);
+      message.error('CodeRun 修改失败');
+    }
+  };
+  // 更新 CodeSuggestion 的异步函数
+  const handleSubmitCodeSuggestion = async (str: string, id: number) => {
+    try {
+      // 调用 API 更新 codeSuggestion
+      await updateCodeSuggestionUsingPost({ codeSuggestion: str, id: id });
+
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 codeSuggestion
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeSuggestion: str } : chart,
+      );
+
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeSuggestion 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeSuggestion:', error);
+      message.error('CodeSuggestion 修改失败');
+    }
+  };
+  // 更新 CodeCataloguePath 的异步函数
+  const handleSubmitCodeCataloguePath = async (str: string, id: number) => {
+    try {
+      // 调用 API 更新 codeCataloguePath
+      await updateCodeCataloguePathUsingPost({ codeCataloguePath: str, id: id });
+
+      // 更新状态以局部刷新界面
+      // 查找当前列表中对应的图表并更新它的 codeCataloguePath
+      const updatedChartList = chartList.map((chart) =>
+        chart.id === id ? { ...chart, codeCataloguePath: str } : chart,
+      );
+
+      setChartList(updatedChartList); // 更新状态以触发重新渲染
+      message.success('CodeCataloguePath 修改成功');
+    } catch (error) {
+      console.error('Error updating CodeCataloguePath:', error);
+      message.error('CodeCataloguePath 修改失败');
+    }
+  };
   // 添加点击处理函数
   const handleMenuClick = (key: string) => {
     localStorage.setItem('lastSelectedKey', key);
@@ -95,11 +264,23 @@ const App: React.FC = () => {
             {/*前言*/}
             <Typography>
               <Card>
-                <Paragraph style={{ textAlign: 'left' }}>
-                  <Title level={5}>分析名称 : {selectedChart.genName}</Title>
+                <Paragraph
+                  style={{ textAlign: 'left' }}
+                  editable={{
+                    onChange: async (value: string) => {
+                      await handleSubmitGenName(value, selectedChart?.id as number);
+                    },
+                    text: selectedChart.genName,
+                    tooltip: '编辑',
+                  }}
+                >
+                  <Text strong>分析名称 : {selectedChart.genName}</Text>
                 </Paragraph>
                 <Paragraph style={{ textAlign: 'left' }}>
-                  <Title level={5}>分析目标 : {selectedChart.goal}</Title>
+                  <Text strong>分析目标 : {selectedChart.goal}</Text>
+                </Paragraph>
+                <Paragraph style={{ textAlign: 'left' }}>
+                  <Text strong>消耗token : {selectedChart.usedToken}</Text>
                 </Paragraph>
                 {/*原始数据部分*/}
                 <Paragraph>
@@ -140,7 +321,9 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeComment(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeComment,
                     tooltip: '编辑',
                   }}
@@ -150,7 +333,7 @@ const App: React.FC = () => {
                 <Paragraph>
                   {/*{selectedChart.codeRun}*/}
                   <Card style={{ backgroundColor: '#fafafa' }}>
-                    <Text code={true}>
+                    <Text>
                       <pre>{selectedChart.codeComment}</pre>
                     </Text>
                   </Card>
@@ -163,7 +346,9 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeProfile(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeProfile,
                     tooltip: '编辑',
                   }}
@@ -183,12 +368,14 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeCataloguePath(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeCataloguePath,
                     tooltip: '编辑',
                   }}
                 >
-                  代码解释
+                  代码目录
                 </Title>
                 <Paragraph>
                   {/*{selectedChart.codeRun}*/}
@@ -201,15 +388,15 @@ const App: React.FC = () => {
               </Typography>
             )}
             {/*项目技术栈*/}
-            {codeTechnology !== '{}' && (
+            {selectedChart.codeTechnology !== '{}' && (
               <Typography style={{ textAlign: 'left' }}>
                 <Title
                   level={3}
-                  editable={{
-                    // onChange: setCodeCataloguePath,
-                    text: selectedChart.codeTechnology,
-                    tooltip: '编辑',
-                  }}
+                  // editable={{
+                  //   // onChange: setCodeCataloguePath,
+                  //   text: selectedChart.codeTechnology,
+                  //   tooltip: '编辑',
+                  // }}
                 >
                   项目技术栈
                 </Title>
@@ -231,7 +418,9 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeRun(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeRun,
                     tooltip: '编辑',
                   }}
@@ -247,7 +436,7 @@ const App: React.FC = () => {
               </Typography>
             )}
             {/*实体关系*/}
-            {codeEntity !== '{}' && (
+            {selectedChart.codeEntity !== '{}' && (
               <Typography style={{ textAlign: 'left' }}>
                 <Title level={3}>实体关系</Title>
                 <Paragraph>
@@ -267,7 +456,9 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeAPI(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeAPI,
                     tooltip: '编辑',
                   }}
@@ -283,12 +474,14 @@ const App: React.FC = () => {
               </Typography>
             )}
             {/*代码规范*/}
-            {codeNorm !== '{}' && (
+            {selectedChart.codeNorm !== '{}' && (
               <Typography style={{ textAlign: 'left' }}>
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeNormStr(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeAPI,
                     tooltip: '编辑',
                   }}
@@ -314,7 +507,9 @@ const App: React.FC = () => {
                 <Title
                   level={3}
                   editable={{
-                    // onChange: setCodeCataloguePath,
+                    onChange: async (value: string) => {
+                      await handleSubmitCodeSuggestion(value, selectedChart?.id as number);
+                    },
                     text: selectedChart.codeSuggestion,
                     tooltip: '编辑',
                   }}
@@ -327,6 +522,34 @@ const App: React.FC = () => {
                     <ReactMarkdown>{selectedChart.codeSuggestion}</ReactMarkdown>
                   </Card>
                 </Paragraph>
+                <FloatButton onClick={() => setVisible(true)} icon={<UploadOutlined />} />
+                {/* 模态框 */}
+                <Modal
+                  title="分享"
+                  open={visible}
+                  onOk={() => handleSubmitDescription(selectedChart?.id as number)} // 传递函数，而不是立即调用
+                  onCancel={() => setVisible(false)}
+                  okText="上传"
+                  cancelText="取消"
+                >
+                  <Form
+                    layout="vertical"
+                    onFinish={() => handleSubmitDescription(selectedChart?.id as number)}
+                  >
+                    <Form.Item
+                      name="description"
+                      label="描述信息"
+                      rules={[{ required: true, message: '请输入描述信息!' }]}
+                    >
+                      <Input.TextArea
+                        value={description}
+                        onChange={handleDescriptionChange}
+                        placeholder="请输入描述信息"
+                        rows={4}
+                      />
+                    </Form.Item>
+                  </Form>
+                </Modal>
               </Typography>
             )}
           </>
@@ -434,6 +657,7 @@ const App: React.FC = () => {
             {renderContent()}
           </div>
         </Content>
+
         <Footer style={{ textAlign: 'center' }}>
           Ant Design ©{new Date().getFullYear()} Created by Ant UED
         </Footer>
@@ -442,4 +666,4 @@ const App: React.FC = () => {
   );
 };
 
-export default App;
+export default History;
