@@ -1,0 +1,17 @@
+/* fade-in-out.css */
+
+.fade-in-out {
+  animation: fade-in-out 2s forwards; /* 移除了 infinite */
+}
+
+@keyframes fade-in-out {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: #e6f7ff; /* 指定的颜色 */
+  }
+  100% {
+    background-color: transparent;
+  }
+}

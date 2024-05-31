@@ -1,196 +1,222 @@
-import {
-  doPostFavourUsingPost,
-  doThumbUsingPost,
-  listPostVoByPageUsingPost,
-} from '@/services/boxai/postController';
-import Icon, { AntDesignOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
+import {listPosts,} from '@/services/boxai/postController';
+import Icon, {AntDesignOutlined, LikeOutlined, StarOutlined} from '@ant-design/icons';
 import '@umijs/max';
-import { Link } from '@umijs/max';
-import { Avatar, Card, Descriptions, Flex, List, message, Typography } from 'antd';
-import React, { useEffect, useState } from 'react';
+import {Link} from '@umijs/max';
+import {Avatar, Card, Descriptions, Empty, Flex, List, message, Space, Typography} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {useModel} from "@@/exports";
+import {doLike} from "@/services/boxai/likeController";
+import {doFavorite} from "@/services/boxai/favoriteController";
 
-const { Paragraph, Text } = Typography;
+const {Paragraph, Text} = Typography;
 
 const Post: React.FC = () => {
-  const [, setTotal] = useState(0);
-  const [postList, setPostList] = useState<API.PostVO[]>([]);
-  const initSearchParams = {
-    current: 1,
-    pageSize: 10,
-    // genName: '' // 添加搜索字段的初始值
-  };
-  const IconText = ({ icon: IconComponent, text, onClick, type }) => (
-    <a onClick={onClick} style={{ marginRight: 16 }}>
-      <IconComponent style={{ marginRight: 4 }} />
-      {text}
-      {type === 'like' && <Icon type="heart" />}
-    </a>
-  );
-  const handleLike = async (id: number) => {
-    if (id === 0) {
-      message.error('点赞失败');
-      return;
-    }
 
-    try {
-      const newVar = await doThumbUsingPost({ postId: id });
+    // 获取已经分享的chart列表
+    const [postSharePageList, setPostSharePageList] = useState<API.PagePostListQueryVO>();
+    // 初始化页面参数
+    const initSearchParams = {
+        pageModel: {
+            page: 0,
+            size: 0,
+            allowDeep: false,
+        },
+    };
+    // 分页信息请求
+    const [searchParams, setSearchParams] = useState<API.listPostsParams>(initSearchParams);
+    // 图表列表信息请求
+    const [formChartListData, setFormChartListData] = useState<API.PostQueryDTO>({});
 
-      if (newVar.data === 1) {
-        setPostList((prevList) =>
-          prevList.map((item) =>
-            item.resultId === id ? { ...item, thumbNum: (item.thumbNum ?? 0) + 1 } : item,
-          ),
-        );
-        message.success('点赞成功');
-      } else if (newVar.data === -1) {
-        // 假设这里是取消点赞的逻辑
-        setPostList((prevList) =>
-          prevList.map((item) =>
-            item.resultId === id
-              ? { ...item, thumbNum: Math.max(0, (item.thumbNum ?? 0) - 1) }
-              : item,
-          ),
-        );
-        message.success('取消成功');
-      } else {
-        message.error('状态异常');
-      }
-    } catch (error) {
-      // 这里应该处理异步操作中可能出现的错误
-      message.error('点赞时发生错误');
-      console.error('Error liking post:', error);
-    }
-  };
-  const handleFavorite = async (id: number) => {
-    if (id === 0) {
-      message.error('收藏失败');
-    }
-    const newVar = await doPostFavourUsingPost({ postId: id });
+    // 分享大厅chart分页列表
+    const handleShareList = async () => {
+        const res = await listPosts({...searchParams}, {...formChartListData});
+        if (res.code === 200) {
+            setPostSharePageList(res.data)
+            message.success('获取分享列表成功');
+        } else {
+            message.error('暂无数据');
+        }
+    };
+    // 点赞收藏渲染
+    const IconText = ({icon, text, onClick, type}: {
+        icon: React.FC;
+        text: string;
+        onClick: () => void;
+        type?: 'like' | 'favorite';
+    }) => (
+        <Space>
+            <a onClick={onClick} style={{marginRight: 16}}>
+                {React.createElement(icon)}
+                {text}
+                {type === 'like' && <Icon type="heart"/>}
+            </a>
+        </Space>
+    );
 
-    if (newVar.data === 1) {
-      setPostList((prevList) =>
-        prevList.map((item) =>
-          item.resultId === id ? { ...item, favourNum: (item.favourNum ?? 0) + 1 } : item,
-        ),
-      );
-      message.success('收藏成功');
-    } else if (newVar.data === -1) {
-      // 假设这里是取消点赞的逻辑
-      setPostList((prevList) =>
-        prevList.map((item) =>
-          item.resultId === id
-            ? { ...item, favourNum: Math.max(0, (item.favourNum ?? 0) - 1) }
-            : item,
-        ),
-      );
-      message.success('取消成功');
-    } else {
-      message.error('状态异常');
-    }
-    // 这里应添加你的收藏逻辑
-  };
-
-  // 获取帖子列表信息
-  const getPostList = async () => {
-    try {
-      const res = await listPostVoByPageUsingPost({ ...initSearchParams });
-      setTotal(res.data?.total ?? 0);
-      setPostList(res.data?.records ?? []);
-      console.log(res.data);
-    } catch (error) {
-      console.error('Error updating profile:', error);
-    }
-  };
-
-  useEffect(() => {
-    getPostList();
-  }, []);
-  // 渲染帖子列表
-  const renderPostList = () => {
-    return postList?.map((post) => (
-      <List key={post.id} style={{ display: 'inline-block' }}>
-        <List.Item style={{ width: '80vh', margin: '24px' }}>
-          <Card
-            size={'default'}
-            title={
-              <Flex align="center">
-                <div>
-                  <Avatar
-                    style={{}}
-                    size={{
-                      xs: 12,
-                      sm: 16,
-                      md: 20,
-                      lg: 32,
-                    }}
-                    icon={<AntDesignOutlined />}
-                    src={post?.userAvatar}
-                  />
-                </div>
-                <Descriptions
-                  size={'small'}
-                  style={{ marginLeft: '12px', width: 'calc(100% - 52px)' }} // 减去 Avatar 的宽度
-                  items={[
-                    {
-                      key: '1',
-                      children: <Text style={{ lineHeight: '32px' }}>{post?.userName}</Text>,
-                      span: 1,
-                    },
-                    {
-                      key: '2',
-                      children: <Text style={{ lineHeight: '32px' }}>{post?.genName}</Text>,
-                      span: 2,
-                    },
-                  ]}
-                ></Descriptions>
-              </Flex>
+    // 帖子点赞操作
+    const {initialState} = useModel('@@initialState');
+    const handleLike = async (id: number) => {
+        console.log(id)
+        if (id === 0) {
+            message.error('点赞失败，帖子id不存在');
+            return;
+        }
+        try {
+            const res = await doLike({userId: initialState?.currentUser?.id, postId: id})
+            // 点赞
+            if (res.code === 200 && res.data === true) {
+                postSharePageList?.records?.map((post) => {
+                    if (post.postId === id) {
+                        post.likesCount = post.likesCount + 1
+                    }
+                })
+                setPostSharePageList({...postSharePageList})
+                message.success('点赞成功');
             }
-            bordered={false}
-          >
-            <Link
-              to={{
-                pathname: '/post/PostData',
-                search: `?resultId=${post.resultId}&userId=${post.userId}`,
-              }}
-            >
-              <Typography>
-                <Paragraph>
-                  <Text>{post.content}</Text>
-                </Paragraph>
-                <Paragraph
-                  ellipsis={{
-                    rows: 3,
-                  }}
-                >
-                  {/*<EllipsisMiddle suffixCount={12} >*/}
-                  <Text type="secondary">{post.codeProfile ?? ''}</Text>
-                  {/*</EllipsisMiddle>*/}
-                </Paragraph>
-              </Typography>
-            </Link>
-            <List.Item
-              actions={[
-                <IconText
-                  icon={LikeOutlined}
-                  text={post.thumbNum ?? 0}
-                  key="list-vertical-like-o"
-                  onClick={() => handleLike(post.resultId ?? 0)}
-                  type="like"
-                />,
-                <IconText
-                  icon={StarOutlined}
-                  text={post.favourNum ?? 0}
-                  key="list-vertical-star-o"
-                  onClick={() => handleFavorite(post.resultId ?? 0)}
-                />,
-                // <IconText icon={MessageOutlined} text="2" key="list-vertical-message"/>,
-              ]}
-            ></List.Item>
-          </Card>
-        </List.Item>
-      </List>
-    ));
-  };
-  return <div>{renderPostList()}</div>;
+            if (res.code === 200 && res.data === false) {
+                postSharePageList?.records?.map((post) => {
+                    if (post.postId === id) {
+                        post.likesCount = post.likesCount - 1
+                    }
+                })
+                setPostSharePageList({...postSharePageList})
+                message.success('取消成功');
+            }
+        } catch (error) {
+            console.error('点赞错误:', error);
+        }
+    };
+
+    const handleFavorite = async (id: number) => {
+        console.log(id)
+        if (id === 0) {
+            message.error('收藏失败，帖子id不存在');
+            return;
+        }
+        try {
+            const res = await doFavorite({userId: initialState?.currentUser?.id, postId: id})
+            // 点赞
+            if (res.code === 200 && res.data === true) {
+                postSharePageList?.records?.map((post) => {
+                    if (post.postId === id) {
+                        post.favoritesCount = post.favoritesCount + 1
+                    }
+                })
+                setPostSharePageList({...postSharePageList})
+                message.success('收藏成功');
+            }
+            if (res.code === 200 && res.data === false) {
+                postSharePageList?.records?.map((post) => {
+                    if (post.postId === id) {
+                        post.favoritesCount = post.favoritesCount - 1
+                    }
+                })
+                setPostSharePageList({...postSharePageList})
+                message.success('取消成功');
+            }
+        } catch (error) {
+            console.error('点赞错误:', error);
+        }
+    };
+
+    useEffect(() => {
+
+        handleShareList();
+    }, []);
+
+    // 刷新全局页面
+
+    // 渲染帖子列表
+    const renderPostList = () => {
+        if (postSharePageList) {
+            return postSharePageList?.records?.map((post) => (
+                <List key={post.id} style={{display: 'inline-block'}}>
+                    <List.Item style={{width: '80vh', margin: '24px'}}>
+                        <Card
+                            size={'default'}
+                            title={
+                                <Flex align="center">
+                                    <div>
+                                        <Avatar
+                                            size={{
+                                                xs: 12,
+                                                sm: 16,
+                                                md: 20,
+                                                lg: 32,
+                                            }}
+                                            icon={<AntDesignOutlined/>}
+                                            src={post?.avatarUrl}
+                                        />
+                                    </div>
+                                    <Descriptions
+                                        size={'small'}
+                                        style={{marginLeft: '12px', width: 'calc(100% - 52px)'}} // 减去 Avatar 的宽度
+                                        items={[
+                                            {
+                                                key: '1',
+                                                children: <Text style={{lineHeight: '32px'}}>{post?.nickname}</Text>,
+                                                span: 1,
+                                            },
+                                            {
+                                                key: '2',
+                                                children: <Text style={{lineHeight: '32px'}}>{post?.nickname}</Text>,
+                                                span: 2,
+                                            },
+                                        ]}
+                                    ></Descriptions>
+                                </Flex>
+                            }
+                            bordered={false}
+                        >
+                            <Link
+                                to={{
+                                    pathname: '/post/PostData',
+                                }}
+                                onClick={
+                                    () => {
+                                        localStorage.setItem("postId", post.postId)
+                                    }
+                                }
+                            >
+                                <Typography>
+                                    <Paragraph>
+                                        <Text>{post.content}</Text>
+                                    </Paragraph>
+                                    <Paragraph
+                                        ellipsis={{
+                                            rows: 3,
+                                        }}
+                                    >
+                                        <Text type="secondary">{post.codeProfileDescription}</Text>
+                                    </Paragraph>
+                                </Typography>
+                            </Link>
+                            <List.Item
+                                actions={[
+                                    <IconText
+                                        icon={LikeOutlined}
+                                        text={post.likesCount}
+                                        key="list-vertical-like-o"
+                                        onClick={() => handleLike(post.postId)}
+                                        type="like"
+                                    />,
+                                    <IconText
+                                        icon={StarOutlined}
+                                        text={post.favoritesCount}
+                                        key="list-vertical-star-o"
+                                        onClick={() => handleFavorite(post.postId)}
+                                    />,
+                                ]}
+                            ></List.Item>
+                        </Card>
+                    </List.Item>
+                </List>
+            ));
+        } else {
+            return <Empty description="暂无数据"/>;
+        }
+
+    };
+    return <div>{renderPostList()}</div>;
 };
 export default Post;

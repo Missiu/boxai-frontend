@@ -129,7 +129,7 @@ export default defineConfig({
     {
       requestLibPath: "import { request } from '@umijs/max'",
       // 或者使用在线的版本
-      schemaPath: 'http://localhost:8101/api/v2/api-docs',
+      schemaPath: 'http://localhost:8101/api/v3/api-docs/box-ai',
       // schemaPath: join(__dirname, 'oneapi.json'),
       projectName: 'boxai',
       mock: false,

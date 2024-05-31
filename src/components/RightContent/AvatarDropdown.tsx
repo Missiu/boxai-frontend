@@ -1,4 +1,4 @@
-import { userLogoutUsingPost } from '@/services/boxai/userController';
+
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
 import { Spin } from 'antd';
@@ -8,6 +8,7 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 import HeaderDropdown from '../HeaderDropdown';
+import {userLoginInfo} from "@/services/boxai/userController";
 
 /**
  * GlobalHeaderRight 组件的属性接口
@@ -25,7 +26,7 @@ export type GlobalHeaderRightProps = {
 export const AvatarName = () => {
   const { initialState } = useModel('@@initialState');
   const { currentUser } = initialState || {};
-  return <span className="anticon">{currentUser?.userName}</span>;
+  return <span className="anticon">{currentUser?.nickname}</span>;
 };
 
 /**
@@ -59,7 +60,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
    * 执行退出登录操作，会重定向到登录页
    */
   const loginOut = async () => {
-    await userLogoutUsingPost();
+    await userLoginInfo();
     const { search, pathname } = window.location;
     const urlParams = new URL(window.location.href).searchParams;
     /**
@@ -121,7 +122,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
   const { currentUser } = initialState;
 
   // 如果当前用户信息不存在，显示加载动画
-  if (!currentUser || !currentUser.userName) {
+  if (!currentUser || !currentUser.nickname) {
     return loading;
   }
 

@@ -2,35 +2,69 @@
 /* eslint-disable */
 import { request } from '@umijs/max';
 
-/** deleteUser POST /api/user/delete */
-export async function deleteUserUsingPost(
-  body: API.UserDeleteRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseBoolean_>('/api/user/delete', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** getLoginUser GET /api/user/get/login */
-export async function getLoginUserUsingGet(options?: { [key: string]: any }) {
-  return request<API.BaseResponseUserInfoResponse_>('/api/user/get/login', {
+/** 此处后端没有提供注释 GET /user/delete */
+export async function userDelete(options?: { [key: string]: any }) {
+  return request<API.RBoolean>('/user/delete', {
     method: 'GET',
     ...(options || {}),
   });
 }
 
-/** listUserByPage POST /api/user/list/page */
-export async function listUserByPageUsingPost(
-  body: API.UserQueryRequest,
+/** 此处后端没有提供注释 GET /user/info */
+export async function userLoginInfo(options?: { [key: string]: any }) {
+  return request<API.RUserInfoVO>('/user/info', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 PUT /user/info */
+export async function updateUserInfo(body: API.UserUpdateDTO, options?: { [key: string]: any }) {
+  return request<API.RBoolean>('/user/info', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 PUT /user/key */
+export async function updateUserKey(body: API.UserUpdateKeyDTO, options?: { [key: string]: any }) {
+  return request<API.RBoolean>('/user/key', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /user/list/info */
+export async function listUserInfo(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.listUserInfoParams,
+  body: API.UserQueryDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponsePageUser_>('/api/user/list/page', {
+  return request<API.RPageUserInfoVO>('/user/list/info', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    params: {
+      ...params,
+    },
+    data: body,
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 POST /user/login */
+export async function userLogin(body: API.UserLoginDTO, options?: { [key: string]: any }) {
+  return request<API.RString>('/user/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -40,13 +74,21 @@ export async function listUserByPageUsingPost(
   });
 }
 
-/** userLogin POST /api/user/login */
-export async function userLoginUsingPost(
-  body: API.UserLoginRequest,
+/** 此处后端没有提供注释 GET /user/logout */
+export async function userLogout(options?: { [key: string]: any }) {
+  return request<API.RBoolean>('/user/logout', {
+    method: 'GET',
+    ...(options || {}),
+  });
+}
+
+/** 此处后端没有提供注释 PUT /user/password */
+export async function updateUserPassword(
+  body: API.UserUpdatePasswordDTO,
   options?: { [key: string]: any },
 ) {
-  return request<API.BaseResponseUserInfoResponse_>('/api/user/login', {
-    method: 'POST',
+  return request<API.RBoolean>('/user/password', {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
@@ -55,80 +97,9 @@ export async function userLoginUsingPost(
   });
 }
 
-/** userLogout POST /api/user/logout */
-export async function userLogoutUsingPost(options?: { [key: string]: any }) {
-  return request<API.BaseResponseBoolean_>('/api/user/logout', {
-    method: 'POST',
-    ...(options || {}),
-  });
-}
-
-/** userRegister POST /api/user/register */
-export async function userRegisterUsingPost(
-  body: API.UserRegisterRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseLong_>('/api/user/register', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** upAccount POST /api/user/update/account */
-export async function upAccountUsingPost(
-  body: API.UserUpInfoRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseInt_>('/api/user/update/account', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** upUserName POST /api/user/update/name */
-export async function upUserNameUsingPost(
-  body: API.UserUpInfoRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseInt_>('/api/user/update/name', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** upPassword POST /api/user/update/password */
-export async function upPasswordUsingPost(
-  body: API.UserUpPassword,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseInt_>('/api/user/update/password', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: body,
-    ...(options || {}),
-  });
-}
-
-/** upUserProfile POST /api/user/update/profile */
-export async function upUserProfileUsingPost(
-  body: API.UserUpInfoRequest,
-  options?: { [key: string]: any },
-) {
-  return request<API.BaseResponseInt_>('/api/user/update/profile', {
+/** 此处后端没有提供注释 POST /user/register */
+export async function userRegister(body: API.UserRegisterDTO, options?: { [key: string]: any }) {
+  return request<API.RString>('/user/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

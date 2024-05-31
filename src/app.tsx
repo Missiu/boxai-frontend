@@ -1,10 +1,10 @@
-import { AvatarDropdown, AvatarName, Footer, Question } from '@/components';
-import { getLoginUserUsingGet } from '@/services/boxai/userController';
-import type { Settings as LayoutSettings, ProSettings } from '@ant-design/pro-layout';
-import type { RunTimeLayoutConfig } from '@umijs/max';
-import { history } from '@umijs/max';
+import {AvatarDropdown, AvatarName, Footer, Question} from '@/components';
+import {userLoginInfo} from '@/services/boxai/userController';
+import type {ProSettings, Settings as LayoutSettings} from '@ant-design/pro-layout';
+import type {RunTimeLayoutConfig} from '@umijs/max';
+import {history, RequestConfig} from '@umijs/max';
 import defaultSettings from '../config/defaultSettings';
-import { errorConfig } from './requestErrorConfig';
+import {errorConfig} from './requestErrorConfig';
 
 // const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -14,13 +14,14 @@ const loginPath = '/user/login';
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
-  currentUser?: API.UserInfoResponse;
+  currentUser?: API.UserInfoVO;
   loading?: boolean;
-  fetchUserInfo?: () => Promise<API.UserInfoResponse | undefined>;
+  fetchUserInfo?: () => Promise<API.UserInfoVO | undefined>;
+  chartList?: API.PageChartQueryVO;
 }> {
   const fetchUserInfo = async () => {
     try {
-      const msg = await getLoginUserUsingGet();
+      const msg = await userLoginInfo();
       return msg.data;
     } catch (error) {
       history.push(loginPath);
@@ -28,7 +29,7 @@ export async function getInitialState(): Promise<{
     return undefined;
   };
   // 如果不是登录页面，执行
-  const { location } = history;
+  const {location} = history;
   if (location.pathname !== loginPath) {
     const currentUser = await fetchUserInfo();
     if (currentUser) {
@@ -44,23 +45,24 @@ export async function getInitialState(): Promise<{
     settings: defaultSettings as Partial<ProSettings>,
   };
 }
+
 // ProLayout 支持的api https://procomponents.ant.design/components/layout
-export const layout: RunTimeLayoutConfig = ({ initialState }) => {
+export const layout: RunTimeLayoutConfig = ({initialState}) => {
   return {
-    actionsRender: () => [<Question key="doc" />],
+    actionsRender: () => [<Question key="doc"/>],
     avatarProps: {
-      src: initialState?.currentUser?.userAvatar,
-      title: <AvatarName />,
+      src: initialState?.currentUser?.avatarUrl,
+      title: <AvatarName/>,
       render: (_, avatarChildren) => {
         return <AvatarDropdown>{avatarChildren}</AvatarDropdown>;
       },
     },
     waterMarkProps: {
-      content: initialState?.currentUser?.userName,
+      content: initialState?.currentUser?.nickname,
     },
-    footerRender: () => <Footer />,
+    footerRender: () => <Footer/>,
     onPageChange: () => {
-      const { location } = history;
+      const {location} = history;
       // 如果没有登录，重定向到 login
       if (!initialState?.currentUser && location.pathname !== loginPath) {
         history.push(loginPath);
@@ -86,52 +88,26 @@ export const layout: RunTimeLayoutConfig = ({ initialState }) => {
         width: '331px',
       },
     ],
-    // links: isDev
-    //   ? [
-    //       <Link key="openapi" to="/umi/plugin/openapi" target="_blank">
-    //         <LinkOutlined />
-    //         <span>OpenAPI 文档</span>
-    //       </Link>,
-    //     ]
-    //   : [],
     menuHeaderRender: undefined,
-    // 自定义 403 页面
-    // unAccessible: <div>unAccessible</div>,
-    // 增加一个 loading 的状态
-    // @ts-ignore
-    // childrenRender: (children) => {
-    //   // if (initialState?.loading) return <PageLoading />;
-    //   return (
-    //     <>
-    //       {children}
-    //       {isDev && (
-    //         <SettingDrawer
-    //           disableUrlParams
-    //           enableDarkTheme
-    //           settings={initialState?.settings}
-    //           onSettingChange={(settings) => {
-    //             // @ts-ignore
-    //             setInitialState((preInitialState) => ({
-    //               ...preInitialState,
-    //               settings,
-    //             }));
-    //           }}
-    //         />
-    //       )}
-    //     </>
-    //   );
-    // },
     ...initialState?.settings,
   };
 };
 
+const authHeaderInterceptor = (url: string, options: RequestConfig) => {
+  const authHeader = {Token: sessionStorage.getItem('token')};
+  return {
+    url: `${url}`,
+    options: {...options, interceptors: true, headers: authHeader},
+  };
+};
 /**
  * @name request 配置，可以配置错误处理
  * 它基于 axios 和 ahooks 的 useRequest 提供了一套统一的网络请求和错误处理方案。
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const request = {
-  baseURL: 'http://localhost:8101/',
+  baseURL: 'http://localhost:8101/api/',
   withCredentials: true,
   ...errorConfig,
+  requestInterceptors: [authHeaderInterceptor],
 };
