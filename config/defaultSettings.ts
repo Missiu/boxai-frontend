@@ -17,7 +17,7 @@ const Settings: ProLayoutProps & {
   colorWeak: false,
   title: 'Box AI',
   pwa: true,
-  logo: 'https://piclist-image.oss-cn-hongkong.aliyuncs.com/logo.svg',
+  logo: 'http://8.217.37.89:5244/d/Data/Images/PC/imgs/login.png',
   iconfontUrl: '',
   footerRender: false,
   siderMenuType: 'sub',
