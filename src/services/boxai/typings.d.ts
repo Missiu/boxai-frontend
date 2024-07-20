@@ -1,5 +1,4 @@
 declare namespace API {
-
   type ChartCreatTextDTO = {
     goalDescription?: string;
     generationName?: string;
@@ -11,14 +10,13 @@ declare namespace API {
   };
 
   type ChartQueryDTO = {
-    id?: number;
     goalDescription?: string;
     generationName?: string;
     userId?: number;
+    id?: number;
   };
 
   type ChartUpdateDTO = {
-    id?: number;
     goalDescription?: string;
     generationName?: string;
     codeComments?: string;
@@ -31,6 +29,7 @@ declare namespace API {
     codeNormRadarDescription?: string;
     codeTechnologyPie?: string;
     codeCatalogPath?: string;
+    id?: number;
   };
 
   type deletePostsParams = {
@@ -43,7 +42,7 @@ declare namespace API {
   };
 
   type getChartInfoParams = {
-    id: number;
+    id: string;
   };
 
   type listChartInfoParams = {
@@ -62,6 +61,11 @@ declare namespace API {
     pageModel: PageModel;
   };
 
+  type OrderItem = {
+    column?: string;
+    asc?: boolean;
+  };
+
   type PageModel = {
     page?: number;
     size?: number;
@@ -74,8 +78,8 @@ declare namespace API {
     size?: number;
     current?: number;
     orders?: OrderItem[];
-    optimizeCountSql?: any;
-    searchCount?: any;
+    optimizeCountSql?: PagePostFavorListQueryVO;
+    searchCount?: PagePostFavorListQueryVO;
     optimizeJoinOfCountSql?: boolean;
     maxLimit?: number;
     countId?: string;
@@ -88,8 +92,8 @@ declare namespace API {
     size?: number;
     current?: number;
     orders?: OrderItem[];
-    optimizeCountSql?: any;
-    searchCount?: any;
+    optimizeCountSql?: PagePostListQueryVO;
+    searchCount?: PagePostListQueryVO;
     optimizeJoinOfCountSql?: boolean;
     maxLimit?: number;
     countId?: string;
@@ -102,8 +106,8 @@ declare namespace API {
     size?: number;
     current?: number;
     orders?: OrderItem[];
-    optimizeCountSql?: any;
-    searchCount?: any;
+    optimizeCountSql?: PageUniversalDataChartsVO;
+    searchCount?: PageUniversalDataChartsVO;
     optimizeJoinOfCountSql?: boolean;
     maxLimit?: number;
     countId?: string;
@@ -116,8 +120,8 @@ declare namespace API {
     size?: number;
     current?: number;
     orders?: OrderItem[];
-    optimizeCountSql?: any;
-    searchCount?: any;
+    optimizeCountSql?: PageUserInfoVO;
+    searchCount?: PageUserInfoVO;
     optimizeJoinOfCountSql?: boolean;
     maxLimit?: number;
     countId?: string;
@@ -125,8 +129,40 @@ declare namespace API {
   };
 
   type PostAddDTO = {
-    chartId?: number;
     content?: string;
+    chartId?: number;
+  };
+
+  type PostFavorListQueryVO = {
+    id?: number;
+    likesCount?: number;
+    favoritesCount?: number;
+    content?: string;
+    userId?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    nickname?: string;
+    avatarUrl?: string;
+    generationName?: string;
+    codeProfileDescription?: string;
+    postId?: number;
+  };
+
+  type PostListQueryVO = {
+    id?: number;
+    likesCount?: number;
+    favoritesCount?: number;
+    content?: string;
+    userId?: number;
+    createTime?: string;
+    updateTime?: string;
+    isDelete?: number;
+    nickname?: string;
+    avatarUrl?: string;
+    generationName?: string;
+    codeProfileDescription?: string;
+    postId?: number;
   };
 
   type PostQueryDTO = {
@@ -135,8 +171,8 @@ declare namespace API {
     codeProfileDescription?: string;
     content?: string;
     userId?: number;
-    postId?: number;
     nickname?: string;
+    postId?: number;
   };
 
   type RBoolean = {
@@ -188,7 +224,6 @@ declare namespace API {
   };
 
   type UniversalDataChartsVO = {
-    id?: number;
     goalDescription?: string;
     generationName?: string;
     aiTokenUsage?: number;
@@ -210,6 +245,7 @@ declare namespace API {
     fileType?: string;
     status?: string;
     execMessage?: string;
+    id?: number;
   };
 
   type UserInfoVO = {

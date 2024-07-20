@@ -88,7 +88,7 @@ const History: React.FC = () => {
   // 历史菜单击处理函数
   const navigate = useNavigate();
   // 从redis获取chart信息
-  const getChartInfoByRedis = async (id: number) => {
+  const getChartInfoByRedis = async (id) => {
     const res = await getChartInfo({ id: id });
     if (res.code === 200) {
       console.log(res.data);
@@ -99,9 +99,15 @@ const History: React.FC = () => {
   };
   const [loading, setLoading] = useState(false);
   const handleMenuClick = (key: string) => {
-    getChartInfoByRedis(parseInt(key)).then((r) => {
+    console.log(key)
+    getChartInfoByRedis(key).then((r) => {
       setStatus(r);
-      message.success('当前状态: ' + r);
+      if (r === null){
+        message.success('当前状态: ' + "COMPLETED");
+      }else {
+        message.success('当前状态: ' + r);
+      }
+
     });
     console.log(key);
     console.log(loading);
@@ -389,9 +395,6 @@ const History: React.FC = () => {
       const codeEntities = parseCodeNorm(selectedChart?.codeEntities as string);
       const codeTechnologyPie = parseCodeNorm(selectedChart?.codeTechnologyPie as string);
       const codeNormRadar = parseCodeNorm(selectedChart?.codeNormRadar as string);
-      console.log(codeEntities);
-      console.log(codeTechnologyPie);
-      console.log(codeNormRadar);
       return (
         <>
           {/*前言*/}
@@ -567,7 +570,7 @@ const History: React.FC = () => {
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
                         <Card style={{ backgroundColor: '#fafafa' }}>
-                          {codeTechnologyPie !== '{}' ? (
+                          {codeTechnologyPie ? (
                             <EChartsReact option={codeTechnologyPie} />
                           ) : (
                             <ReactMarkdown>

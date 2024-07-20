@@ -230,9 +230,10 @@ const ChartSync: React.FC = () => {
         values.file.file.originFileObj,
       );
       if (res.code === 200) {
-        localStorage.setItem('chartId', res.data?.id);
+        console.log(res.data)
+        localStorage.setItem('chartId', res.data?.id.toString());
         sessionStorage.setItem('reloaded', 'false');
-        navigate(`/history/${res.data?.id}`);
+        navigate(`/history/${res.data?.id.toString()}`);
         message.success('分析成功');
         setSubmitting(false);
         return;
@@ -268,9 +269,10 @@ const ChartSync: React.FC = () => {
         values.files.fileList?.map((file: any) => file.originFileObj),
       );
       if (res.code === 200) {
+        console.log(res.data)
         sessionStorage.setItem('reloaded', 'false');
-        localStorage.setItem('chartId', res.data?.id);
-        navigate(`/history/${res.data?.id}`);
+        localStorage.setItem('chartId', res.data?.id.toString());
+        navigate(`/history/${res.data?.id.toString()}`);
         message.success('分析成功');
         setSubmitting(false);
         return;
@@ -304,6 +306,7 @@ const ChartSync: React.FC = () => {
         text: values.textInput,
       });
       if (res.code === 200) {
+        console.log(res.data)
         sessionStorage.setItem('reloaded', 'false');
         localStorage.setItem('chartId', res.data?.id);
         navigate(`/history/${res.data?.id}`);

@@ -59,7 +59,7 @@ const History: React.FC = () => {
   const [postInfo, setPostInfo] = useState<API.PagePostListQueryVO>()
   const getPostVO = async () => {
     try {
-      const res = await listPosts({pageModel: {...searchParams}},{postId:parseInt(chartId),userId: initialState?.currentUser?.id});
+      const res = await listPosts({pageModel: {...searchParams}},{postId:parseInt(chartId)});
       if (res.code === 200) {
         setPostInfo(res.data)
       } else {
@@ -107,8 +107,22 @@ const History: React.FC = () => {
       console.error('点赞错误:', error);
     }
   };
+  function parseCodeNorm(code: string) {
+    if (!code) return null;
 
-  const handleFavorite = async (id: number) => {
+    try {
+      const parsed = JSON.parse(code);
+      if (typeof parsed === 'object' && parsed !== null) {
+        return parsed;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error('解析 JSON 字符串时出错:', error);
+      return null;
+    }
+  }
+  const handleFavorite = async (id) => {
     console.log(id)
     if (id === 0) {
       message.error('收藏失败，帖子id不存在');
@@ -168,18 +182,9 @@ const History: React.FC = () => {
       // 根据chartId获取详细的图表数据
       const selectedChart = chartInfo?.records?.find((chart) => String(chart.id) === chartId);
       if (selectedChart) {
-        let codeTechnologyPie = null;
-        let codeEntities = null;
-        let codeNormRadar = null;
-        try {
-          codeTechnologyPie = JSON.parse(selectedChart.codeTechnologyPie);
-          codeEntities = JSON.parse(selectedChart.codeEntities);
-          codeNormRadar = JSON.parse(selectedChart.codeNormRadar);
-        } catch (e) {
-          codeTechnologyPie = null;
-          codeEntities = null;
-          codeNormRadar = null;
-        }
+        const codeEntities = parseCodeNorm(selectedChart?.codeEntities as string);
+        const codeTechnologyPie = parseCodeNorm(selectedChart?.codeTechnologyPie as string);
+        const codeNormRadar = parseCodeNorm(selectedChart?.codeNormRadar as string);
 
         return (
           <>
