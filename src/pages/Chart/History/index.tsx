@@ -1,7 +1,7 @@
-import { getChartInfo, listChartInfo, updateChartInfo } from '@/services/boxai/dataChartController';
-import { sharePosts } from '@/services/boxai/postController';
-import { useModel, useNavigate } from '@@/exports';
-import { UploadOutlined } from '@ant-design/icons';
+import {getChartInfo, listChartInfo, updateChartInfo} from '@/services/boxai/dataChartController';
+import {sharePosts} from '@/services/boxai/postController';
+import {useModel, useNavigate} from '@@/exports';
+import {UploadOutlined} from '@ant-design/icons';
 import {
   Alert,
   Button,
@@ -23,13 +23,13 @@ import {
 } from 'antd';
 import Search from 'antd/es/input/Search';
 import EChartsReact from 'echarts-for-react';
-import React, { useEffect, useState } from 'react';
-import { flushSync } from 'react-dom';
+import React, {useEffect, useState} from 'react';
+import {flushSync} from 'react-dom';
 import ReactMarkdown from 'react-markdown';
 import './menu.css';
 
-const { Content, Sider } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const {Content, Sider} = Layout;
+const {Title, Paragraph, Text} = Typography;
 
 const History: React.FC = () => {
   /**
@@ -42,7 +42,7 @@ const History: React.FC = () => {
   /**
    * 全局参数获取用户和列表信息
    */
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const {initialState, setInitialState} = useModel('@@initialState');
   // 图表分页查询的结果列表
   const [chartPageList, setChartPageList] = useState<API.PageUniversalDataChartsVO>();
   // 如果列表信息不存在
@@ -53,9 +53,9 @@ const History: React.FC = () => {
   const getChartListData = async () => {
     try {
       // 全局参数里获取用户信息，作为查询参数的一部分
-      setFormChartListData({ userId: initialState?.currentUser?.id });
+      setFormChartListData({userId: initialState?.currentUser?.id});
       const res = await listChartInfo(
-        { pageModel: { ...searchParams } },
+        {pageModel: {...searchParams}},
         {
           ...formChartListData,
           userId: initialState?.currentUser?.id,
@@ -89,7 +89,7 @@ const History: React.FC = () => {
   const navigate = useNavigate();
   // 从redis获取chart信息
   const getChartInfoByRedis = async (id) => {
-    const res = await getChartInfo({ id: id });
+    const res = await getChartInfo({id: id});
     if (res.code === 200) {
       console.log(res.data);
       return res.data?.status as string;
@@ -102,9 +102,9 @@ const History: React.FC = () => {
     console.log(key)
     getChartInfoByRedis(key).then((r) => {
       setStatus(r);
-      if (r === null){
+      if (r === null) {
         message.success('当前状态: ' + "COMPLETED");
-      }else {
+      } else {
         message.success('当前状态: ' + r);
       }
 
@@ -121,7 +121,7 @@ const History: React.FC = () => {
     return (
       <Menu.Item
         className={`my-item ${item.highlight ? 'fade-in-out' : ''}`}
-        style={{ padding: '10px', borderRadius: '4px' }}
+        style={{padding: '10px', borderRadius: '4px'}}
         key={item.id}
         onClick={(key) => {
           handleMenuClick(key.key);
@@ -136,7 +136,7 @@ const History: React.FC = () => {
    * 搜索框处理,搜索条件：ChartQueryDTO
    * Long id 、String goalDescription 、 String generationName 、Long userId
    */
-  // 图表信息类型
+    // 图表信息类型
   interface chartType {
     id: number;
     goalDescription: string;
@@ -199,14 +199,14 @@ const History: React.FC = () => {
       };
     }
     // 开始搜索
-    const res = await listChartInfo({ pageModel: { ...searchParams } }, { ...formSearchData });
+    const res = await listChartInfo({pageModel: {...searchParams}}, {...formSearchData});
     if (res.code === 200) {
       // 暂时修改图表分页查询的结果列表
       const newMergedList = mergeAndHighlight(
         chartPageList?.records as chartType[],
         res.data?.records as chartType[],
       );
-      setChartPageList({ records: newMergedList });
+      setChartPageList({records: newMergedList});
       message.success('搜索成功');
     } else {
       message.error('搜索失败' + res.msg);
@@ -218,7 +218,7 @@ const History: React.FC = () => {
   //
 
   const handleSubmitChartInfo = async (charInfo: API.ChartUpdateDTO) => {
-    const res = await updateChartInfo({ ...charInfo });
+    const res = await updateChartInfo({...charInfo});
     if (res.code === 200) {
       setChartInfo(charInfo);
       message.success('更新成功');
@@ -239,7 +239,7 @@ const History: React.FC = () => {
     setDescription(e.target.value);
   };
   const handleShare = async (value: API.PostAddDTO) => {
-    const res = await sharePosts({ ...value });
+    const res = await sharePosts({...value});
     if (res.code === 200) {
       message.success('分享成功');
       setModalVisible(false);
@@ -315,7 +315,7 @@ const History: React.FC = () => {
           <Typography>
             <Card>
               <Paragraph
-                style={{ textAlign: 'left' }}
+                style={{textAlign: 'left'}}
                 editable={{
                   onChange: async (value: string) => {
                     await handleSubmitChartInfo({
@@ -333,7 +333,7 @@ const History: React.FC = () => {
                 </Text>
               </Paragraph>
               <Paragraph
-                style={{ textAlign: 'left' }}
+                style={{textAlign: 'left'}}
                 editable={{
                   onChange: async (value: string) => {
                     await handleSubmitChartInfo({
@@ -350,7 +350,7 @@ const History: React.FC = () => {
                   分析目标 : {charInfo?.goalDescription || selectedChart?.goalDescription}
                 </Text>
               </Paragraph>
-              <Paragraph style={{ textAlign: 'left' }}>
+              <Paragraph style={{textAlign: 'left'}}>
                 <Text strong>消耗token : {selectedChart?.aiTokenUsage}</Text>
               </Paragraph>
 
@@ -362,14 +362,14 @@ const History: React.FC = () => {
                   <Switch
                     checked={expanded}
                     onChange={() => setExpanded((c) => !c)}
-                    style={{ flex: 'none' }}
+                    style={{flex: 'none'}}
                   />
                   <Slider
                     min={1}
                     max={20}
                     value={rows}
                     onChange={setRows}
-                    style={{ flex: 'auto' }}
+                    style={{flex: 'auto'}}
                   />
                 </Flex>
                 <Paragraph
@@ -401,7 +401,7 @@ const History: React.FC = () => {
           <Typography>
             <Card>
               <Paragraph
-                style={{ textAlign: 'left' }}
+                style={{textAlign: 'left'}}
                 editable={{
                   onChange: async (value: string) => {
                     await handleSubmitChartInfo({
@@ -419,7 +419,7 @@ const History: React.FC = () => {
                 </Text>
               </Paragraph>
               <Paragraph
-                style={{ textAlign: 'left' }}
+                style={{textAlign: 'left'}}
                 editable={{
                   onChange: async (value: string) => {
                     await handleSubmitChartInfo({
@@ -436,7 +436,7 @@ const History: React.FC = () => {
                   分析目标 : {charInfo?.goalDescription || selectedChart?.goalDescription}
                 </Text>
               </Paragraph>
-              <Paragraph style={{ textAlign: 'left' }}>
+              <Paragraph style={{textAlign: 'left'}}>
                 <Text strong>消耗token : {selectedChart?.aiTokenUsage}</Text>
               </Paragraph>
 
@@ -448,14 +448,14 @@ const History: React.FC = () => {
                   <Switch
                     checked={expanded}
                     onChange={() => setExpanded((c) => !c)}
-                    style={{ flex: 'none' }}
+                    style={{flex: 'none'}}
                   />
                   <Slider
                     min={1}
                     max={20}
                     value={rows}
                     onChange={setRows}
-                    style={{ flex: 'auto' }}
+                    style={{flex: 'auto'}}
                   />
                 </Flex>
                 <Paragraph
@@ -487,7 +487,7 @@ const History: React.FC = () => {
                 <>
                   {/*项目简介*/}
                   {selectedChart?.codeProfileDescription && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -508,7 +508,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeProfileDescription ||
                               selectedChart.codeProfileDescription}
@@ -520,7 +520,7 @@ const History: React.FC = () => {
 
                   {/*项目注释*/}
                   {selectedChart?.codeComments && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -539,7 +539,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeComments || selectedChart.codeComments}
                           </ReactMarkdown>
@@ -547,10 +547,38 @@ const History: React.FC = () => {
                       </Paragraph>
                     </Typography>
                   )}
-
+                  {/*项目注释*/}
+                  {selectedChart?.codeCatalogPath && (
+                    <Typography style={{textAlign: 'left'}}>
+                      <Title
+                        level={3}
+                        editable={{
+                          onChange: async (value: string) => {
+                            await handleSubmitChartInfo({
+                              ...charInfo,
+                              codeCatalogPath: value,
+                              id: selectedChart?.id,
+                            });
+                          },
+                          text: charInfo?.codeCatalogPath || selectedChart?.codeCatalogPath,
+                          tooltip: '编辑',
+                        }}
+                      >
+                        目录说明
+                      </Title>
+                      <Paragraph>
+                        {/*{selectedChart.codeProfile}*/}
+                        <Card style={{backgroundColor: '#fafafa'}}>
+                          <pre>
+                            {charInfo?.codeCatalogPath || selectedChart.codeCatalogPath}
+                          </pre>
+                        </Card>
+                      </Paragraph>
+                    </Typography>
+                  )}
                   {/*项目技术栈*/}
                   {selectedChart?.codeTechnologyPie && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -569,9 +597,9 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           {codeTechnologyPie ? (
-                            <EChartsReact option={codeTechnologyPie} />
+                            <EChartsReact option={codeTechnologyPie}/>
                           ) : (
                             <ReactMarkdown>
                               {charInfo?.codeTechnologyPie || selectedChart?.codeTechnologyPie}
@@ -584,7 +612,7 @@ const History: React.FC = () => {
 
                   {/*项目运行*/}
                   {selectedChart?.codeExecution && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -603,7 +631,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeExecution || selectedChart.codeExecution}
                           </ReactMarkdown>
@@ -614,7 +642,7 @@ const History: React.FC = () => {
 
                   {/*项目实体关系*/}
                   {selectedChart?.codeEntities && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -629,13 +657,13 @@ const History: React.FC = () => {
                           tooltip: '编辑',
                         }}
                       >
-                        项目实体关系图
+                        项目实体关系
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           {codeEntities ? (
-                            <EChartsReact option={codeEntities} />
+                            <EChartsReact option={codeEntities}/>
                           ) : (
                             <ReactMarkdown>
                               {charInfo?.codeEntities || selectedChart?.codeEntities}
@@ -648,7 +676,7 @@ const History: React.FC = () => {
 
                   {/*项目API*/}
                   {selectedChart?.codeApis && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -667,7 +695,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeApis || selectedChart?.codeApis}
                           </ReactMarkdown>
@@ -678,7 +706,7 @@ const History: React.FC = () => {
 
                   {/*规范评分说明*/}
                   {selectedChart?.codeNormRadarDescription && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -699,7 +727,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeNormRadarDescription ||
                               selectedChart.codeNormRadarDescription}
@@ -711,7 +739,7 @@ const History: React.FC = () => {
 
                   {/*项目雷达评分图*/}
                   {selectedChart?.codeNormRadar && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -730,9 +758,9 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           {codeNormRadar ? (
-                            <EChartsReact option={codeNormRadar} />
+                            <EChartsReact option={codeNormRadar}/>
                           ) : (
                             <ReactMarkdown>
                               {charInfo?.codeNormRadar || selectedChart?.codeNormRadar}
@@ -745,7 +773,7 @@ const History: React.FC = () => {
 
                   {/*项目优化建议*/}
                   {selectedChart?.codeSuggestions && (
-                    <Typography style={{ textAlign: 'left' }}>
+                    <Typography style={{textAlign: 'left'}}>
                       <Title
                         level={3}
                         editable={{
@@ -764,7 +792,7 @@ const History: React.FC = () => {
                       </Title>
                       <Paragraph>
                         {/*{selectedChart.codeProfile}*/}
-                        <Card style={{ backgroundColor: '#fafafa' }}>
+                        <Card style={{backgroundColor: '#fafafa'}}>
                           <ReactMarkdown>
                             {charInfo?.codeSuggestions || selectedChart.codeSuggestions}
                           </ReactMarkdown>
@@ -777,7 +805,7 @@ const History: React.FC = () => {
             </Spin>
           </Flex>
 
-          <FloatButton onClick={() => setModalVisible(true)} icon={<UploadOutlined />} />
+          <FloatButton onClick={() => setModalVisible(true)} icon={<UploadOutlined/>}/>
           {/* 模态框 */}
           <Modal
             title="分享"
@@ -804,7 +832,7 @@ const History: React.FC = () => {
               <Form.Item
                 name="description"
                 label="描述信息"
-                rules={[{ required: true, message: '请输入描述信息!' }]}
+                rules={[{required: true, message: '请输入描述信息!'}]}
               >
                 <Input.TextArea
                   value={description}
@@ -821,7 +849,7 @@ const History: React.FC = () => {
   };
 
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: {colorBgContainer, borderRadiusLG},
   } = theme.useToken();
 
   return (
@@ -838,16 +866,16 @@ const History: React.FC = () => {
           backgroundColor: 'white',
         }}
       >
-        <div className="demo-logo-vertical" />
+        <div className="demo-logo-vertical"/>
         <Button
           size="large"
-          style={{ width: '100%', border: 'none', margin: '8px 0' }}
+          style={{width: '100%', border: 'none', margin: '8px 0'}}
           type={'primary'}
         >
           历史记录
         </Button>
 
-        <div style={{ padding: '12px 0' }}>
+        <div style={{padding: '12px 0'}}>
           <Search
             placeholder="搜索"
             allowClear
@@ -868,8 +896,8 @@ const History: React.FC = () => {
         </Menu>
       </Sider>
 
-      <Layout style={{ marginLeft: 200 }}>
-        <Content style={{ margin: '8px 16px 0', overflow: 'initial' }}>
+      <Layout style={{marginLeft: 200}}>
+        <Content style={{margin: '8px 16px 0', overflow: 'initial'}}>
           <div
             style={{
               padding: 24,

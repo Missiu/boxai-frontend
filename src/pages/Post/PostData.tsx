@@ -51,7 +51,6 @@ const History: React.FC = () => {
   };
 
 
-
   // 数据扩张
   const [rows, setRows] = useState(2);
   const [expanded, setExpanded] = useState(false);
@@ -59,7 +58,7 @@ const History: React.FC = () => {
   const [postInfo, setPostInfo] = useState<API.PagePostListQueryVO>()
   const getPostVO = async () => {
     try {
-      const res = await listPosts({pageModel: {...searchParams}},{postId:parseInt(chartId)});
+      const res = await listPosts({pageModel: {...searchParams}}, {postId: parseInt(chartId)});
       if (res.code === 200) {
         setPostInfo(res.data)
       } else {
@@ -107,6 +106,7 @@ const History: React.FC = () => {
       console.error('点赞错误:', error);
     }
   };
+
   function parseCodeNorm(code: string) {
     if (!code) return null;
 
@@ -122,6 +122,7 @@ const History: React.FC = () => {
       return null;
     }
   }
+
   const handleFavorite = async (id) => {
     console.log(id)
     if (id === 0) {
@@ -267,7 +268,25 @@ const History: React.FC = () => {
                 <Paragraph>
                   {/*{selectedChart.codeProfile}*/}
                   <Card style={{backgroundColor: '#fafafa'}}>
-                    <ReactMarkdown>{ selectedChart.codeComments}</ReactMarkdown>
+                    <ReactMarkdown>{selectedChart.codeComments}</ReactMarkdown>
+                  </Card>
+                </Paragraph>
+              </Typography>
+            )}
+
+            {selectedChart.codeCatalogPath && (
+              <Typography style={{textAlign: 'left'}}>
+                <Title
+                  level={3}
+                >
+                  目录说明
+                </Title>
+                <Paragraph>
+                  {/*{selectedChart.codeProfile}*/}
+                  <Card style={{backgroundColor: '#fafafa'}}>
+                     <pre>
+                        {selectedChart.codeCatalogPath}
+                     </pre>
                   </Card>
                 </Paragraph>
               </Typography>
@@ -307,7 +326,7 @@ const History: React.FC = () => {
                 <Paragraph>
                   {/*{selectedChart.codeProfile}*/}
                   <Card style={{backgroundColor: '#fafafa'}}>
-                    <ReactMarkdown>{ selectedChart.codeExecution}</ReactMarkdown>
+                    <ReactMarkdown>{selectedChart.codeExecution}</ReactMarkdown>
                   </Card>
                 </Paragraph>
               </Typography>
@@ -319,7 +338,7 @@ const History: React.FC = () => {
                 <Title
                   level={3}
                 >
-                  项目实体关系图
+                  项目实体关系
                 </Title>
                 <Paragraph>
                   {/*{selectedChart.codeProfile}*/}
@@ -327,7 +346,7 @@ const History: React.FC = () => {
                     {codeTechnologyPie ? (
                       <EChartsReact option={codeEntities}/>
                     ) : (
-                      <ReactMarkdown>{ selectedChart.codeEntities}</ReactMarkdown>
+                      <ReactMarkdown>{selectedChart.codeEntities}</ReactMarkdown>
                     )}
                   </Card>
                 </Paragraph>
@@ -346,7 +365,7 @@ const History: React.FC = () => {
                 <Paragraph>
                   {/*{selectedChart.codeProfile}*/}
                   <Card style={{backgroundColor: '#fafafa'}}>
-                    <ReactMarkdown>{ selectedChart.codeApis}</ReactMarkdown>
+                    <ReactMarkdown>{selectedChart.codeApis}</ReactMarkdown>
                   </Card>
                 </Paragraph>
               </Typography>
@@ -385,7 +404,7 @@ const History: React.FC = () => {
                     {codeTechnologyPie ? (
                       <EChartsReact option={codeNormRadar}/>
                     ) : (
-                      <ReactMarkdown>{ selectedChart.codeNormRadar}</ReactMarkdown>
+                      <ReactMarkdown>{selectedChart.codeNormRadar}</ReactMarkdown>
                     )}
                   </Card>
                 </Paragraph>
@@ -404,7 +423,7 @@ const History: React.FC = () => {
                 <Paragraph>
                   {/*{selectedChart.codeProfile}*/}
                   <Card style={{backgroundColor: '#fafafa'}}>
-                    <ReactMarkdown>{ selectedChart.codeSuggestions}</ReactMarkdown>
+                    <ReactMarkdown>{selectedChart.codeSuggestions}</ReactMarkdown>
                   </Card>
                 </Paragraph>
               </Typography>
@@ -412,34 +431,34 @@ const History: React.FC = () => {
             <FloatButton onClick={() => setModalVisible(true)} icon={<UploadOutlined/>}/>
             {/* 模态框 */}
             <FloatButton.Group
-              badge={{ dot: true }}
+              badge={{dot: true}}
               open={modalVisible}
               trigger="click"
               onClick={onChange}
-              style={{ right: 24 }}
-              icon={<FullscreenOutlined />}
+              style={{right: 24}}
+              icon={<FullscreenOutlined/>}
             >
               <FloatButton
-                icon={<LikeOutlined />}
+                icon={<LikeOutlined/>}
                 onClick={() => handleLike(parseInt(chartId))}
                 description={postInfo?.records?.[0].likesCount ?? 0}
               >
                 {/*{postList?.favourNum}*/}
               </FloatButton>
               <FloatButton
-                icon={<StarOutlined />}
+                icon={<StarOutlined/>}
                 onClick={() => handleFavorite(selectedChart.id)}
                 description={postInfo?.records?.[0].favoritesCount ?? 0}
               />
-              <FloatButton icon={<LinkOutlined />} onClick={copyLink} />
-              <FloatButton icon={<MessageOutlined />} />
-              <FloatButton icon={<DislikeOutlined />} />
+              <FloatButton icon={<LinkOutlined/>} onClick={copyLink}/>
+              <FloatButton icon={<MessageOutlined/>}/>
+              <FloatButton icon={<DislikeOutlined/>}/>
             </FloatButton.Group>
-            <Switch onChange={onChange} checked={modalVisible} style={{ margin: 16 }} />
+            <Switch onChange={onChange} checked={modalVisible} style={{margin: 16}}/>
             <FloatButton
-              icon={<LeftSquareOutlined />}
+              icon={<LeftSquareOutlined/>}
               shape="circle"
-              style={{ right: 24 + 70 }}
+              style={{right: 24 + 70}}
               onClick={goBack}
             />
           </>
